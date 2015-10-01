@@ -94,7 +94,7 @@ public class Mot {
 		int tailleMot = this.length();
 		int tailleMotif = motif.length();
 		for (int i = 0; i < tailleMot - tailleMotif; i++) {
-			if (this.estFacteurDe(motif, i))
+			if (motif.estFacteurDe(this, i))
 				return i;
 		}
 			return -1;
