@@ -1,0 +1,15 @@
+
+# Fichiers Temporaires
+*~
+
+# Images
+*.png
+*.jpeg
+*.jpg
+
+# PDS
+*.o
+
+# Java
+*.class
+
