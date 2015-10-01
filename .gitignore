@@ -1,6 +1,11 @@
 
 # Fichiers Temporaires
 *~
+*.DS_Store
+*/__MACOSX/*
+
+# Documentation
+*/doc/*
 
 # Images
 *.png
@@ -11,5 +16,8 @@
 *.o
 
 # Java
-*.class
+#*.class
+
+
+
 
