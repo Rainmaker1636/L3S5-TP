@@ -1,0 +1,14 @@
+set DIVISIONS;
+set DETAILLANTS;
+set REGIONS;
+set CATEGORIES;
+
+/* param : region    huile nb_pts_vente spiritueux categorie */
+
+
+/* Un détaillant se caractérise par son nombre de vente d'huile, de point de vente et de vente de spiriteux */
+param huile{DETAILLANTS} >= 0;
+param nb_pts_vente{DETAILLANTS} >= 0;
+param spiritueux{DETAILLANTS} >= 0;
+
+
