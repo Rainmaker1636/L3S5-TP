@@ -1,0 +1,11 @@
+/* Marion Noirbent
+ARO TP2
+Lanceur du modele de campagne de publicité */
+
+reset;
+
+model publicite.mod
+data publicite.dat
+solve;
+
+display touched, m_achat;

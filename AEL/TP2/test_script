@@ -1,0 +1,5 @@
+#http://doc.ubuntu-fr.org/tutoriel/script_shell
+
+touch lol
+ls
+rm -f lol
