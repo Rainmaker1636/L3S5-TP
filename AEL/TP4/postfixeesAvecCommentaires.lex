@@ -15,6 +15,10 @@ package postfixees;
 
 ENTIER_SIMPLE=[0-9]+
 PLUS=[+]|plus
+MINUS=[-]|minus
+MULT=[*]|mult
+QUO=[/]|quo
+OPP=opp
 
 %% 
 
@@ -26,6 +30,29 @@ PLUS=[+]|plus
 <YYINITIAL> {PLUS}
       {
             return new Plus(yytext());
+      }
+
+<YYINITIAL> {MINUS}
+      {
+            return new Minus(yytext());
+      }
+
+
+<YYINITIAL> {MULT}
+      {
+            return new Mult(yytext());
+      }
+
+
+<YYINITIAL> {QUO}
+      {
+            return new Quo(yytext());
+      }
+
+
+<YYINITIAL> {OPP}
+      {
+            return new Opp(yytext());
       }
 
 <YYINITIAL,COMMENTAIRE> "/*"
