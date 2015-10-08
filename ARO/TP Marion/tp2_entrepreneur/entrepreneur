@@ -1,0 +1,11 @@
+/* Marion Noirbent
+ARO TP2
+Lanceur du modele entrepeuneur */
+
+reset;
+
+model entrepreneur.mod
+data entrepreneur.dat
+solve;
+
+display , , ;

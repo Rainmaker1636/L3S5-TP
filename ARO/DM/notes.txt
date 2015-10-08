@@ -1,0 +1,62 @@
+D1 	40%
+D2	60%
+35-65%
+45%-55% possible
+
+P107
+
+5.4.5  Désigner un élément d’un ensemble de symboles
+Implicitement
+On peut vouloir manipuler des noeuds désignés par des symbol
+es plutôt que des nombres. Il
+faut alors ajouter le qualificatif
+symbolic
+au paramètre
+racine
+: les paramètres en effet sont censés
+désigner des quantités numériques.
+# Fichier exemple
+set NOEUDS;
+param racine symbolic in NOEUDS;
+set FEUILLES within NOEUDS := NOEUDS diff { racine };
+data;
+set NOEUDS := A B C D
+param racine := B;
+On continue l’exemple précédent pour montrer un bel exemple
+de paramètre calculé. On sup-
+pose que les noeuds appartiennent à un arbre qu’on décrit grâ
+ce la fonction
+prédecesseur
+. Cette
+fonction est codée par un paramètre indicé par l’ensemble de
+s noeuds moins la racine. On signale
+qu’un noeud ne peut pas être son propre prédecesseur. Enfin on
+affecte au paramètre
+prof
+la
+pro-
+fondeur
+de chaque noeud.
+param pred {n in NOEUDS diff {racine}} in NOEUDS diff {n};
+param prof {n in NOEUDS} :=
+if n = racine then 0 else 1 + prof [pred [n]];
+105
+Explicitement
+Il est parfois utile dans un modèle de manipuler expliciteme
+nt un élément d’un ensemble. Cette
+opération est à éviter autant que faire se peut puisque les él
+éments des ensembles ne sont pas censés
+être connus dans le modèle. Il vaut mieux utiliser la méthode
+de la section précédente. Quand c’est
+nécessaire, il suffit de mettre des guillemets autour du symb
+ole.
+set PROD;
+param prix {PROD} >= 0;
+subject to contrainte_speciale :
+prix ["machin"] <= prix ["truc"];
+Il est parfois utile aussi de donner la valeur d’un ensemble d
+ans le modèle et non dans les
+données. Cette opération aussi est à éviter autant que faire
+se peut. Il suffit de mettre des guillemets
+autour des symboles.
+set PROD := { "machin", "truc", "chose" };

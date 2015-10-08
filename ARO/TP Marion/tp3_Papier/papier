@@ -1,0 +1,22 @@
+/* Marion Noirbent
+ARO TP3
+Lanceur du modele papier */
+
+reset;
+
+model papier.mod
+data papier.dat
+solve;
+
+display cost, nb_jours;
+
+/* ------------------------- */
+/* Lanceur du modèle à stock */
+
+reset;
+
+model papier2.mod
+data papier2.dat
+solve;
+
+display ;

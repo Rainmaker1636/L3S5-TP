@@ -7,6 +7,10 @@
 # Documentation
 */doc/*
 
+# Archives
+*.zip
+*.tar.gz
+
 # Images
 *.png
 *.jpeg
@@ -17,7 +21,7 @@
 
 # Java
 #*.class
-
+#.jar
 
 
 

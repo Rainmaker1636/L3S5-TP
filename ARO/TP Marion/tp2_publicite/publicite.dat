@@ -1,0 +1,11 @@
+data;
+
+set MEDIA := tv mag radio;
+
+param budget:= 1000000;
+param pers:= 700;
+param: prix use_min conso_t pers_sem :=
+tv 20000 10 1800000 7
+mag 10000 0 1000000 21
+radio 2000 120 200000 1;
+
