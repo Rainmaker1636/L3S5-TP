@@ -1,0 +1,21 @@
+/*
+Marion Noirbent et Valentin Ryckewaert
+ARO DM - Groupe 2
+
+Répartition Marché : Lanceur
+*/
+
+/* ------------------------- */
+
+/* Lancer avec : model repartition_marche */
+
+reset;
+
+option solver gurobi;
+model repartition_marche.model
+data repartition_marche.data
+solve;
+
+display , , ;
+
+/* ------------------------- */

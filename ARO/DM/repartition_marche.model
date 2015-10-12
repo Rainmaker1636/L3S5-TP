@@ -1,14 +1,82 @@
-set DIVISIONS;
+/* set DIVISIONS := 0 1; */
+
 set DETAILLANTS;
 set REGIONS;
 set CATEGORIES;
 
-/* param : region    huile nb_pts_vente spiritueux categorie */
+/* ------------------------- */
+/* Paramètres caractérisant un détaillant */
 
+/* ******* */
+/* La région dans laquelle il est implanté */
+param region{DETAILLANTS};
 
-/* Un détaillant se caractérise par son nombre de vente d'huile, de point de vente et de vente de spiriteux */
+/* Son nombre de vente d'huile */
 param huile{DETAILLANTS} >= 0;
+
+/* Son nombre de points de vente */
 param nb_pts_vente{DETAILLANTS} >= 0;
+
+/* Son nombre de vente de spiriteux */
 param spiritueux{DETAILLANTS} >= 0;
+
+/* Sa catégorie */
+param categorie{DETAILLANTS};
+
+/* ------------------------- */
+/* Paramètre calculés */
+
+/* Nombre total de points de ventes */
+param pts_vente_totaux :=
+	sum {m in DETAILLANTS}
+	nb_pts_vente{m};
+
+/* Nombre total de vente de spiriteux */
+param spiritueux_totaux :=
+	sum {m in DETAILLANTS}
+	spiritueux{m};
+
+/* Nombre de points d'huile dans chaque région */
+param huile_par_region {r in REGIONS} :=
+	sum {m in DETAILLANTS : region[m]=r}
+	huile{m};
+
+/* Nombre de détaillants de chaque catégorie */
+param nb_par_categorie{c in CATEGORIES} :=
+	sum {m in DETAILLANTS : categorie[m]=c}
+	1;
+
+/* ------------------------- */
+/* Répartition recherchée */
+
+/* Division à laquelle rattaché chaque détaillant
+div_du_detaillant[m] vaut 0 si m appartient à la division D1, et vaut 1 sinon */
+var div_du_detaillant {m in DETAILLANTS} >= 0, <= 1;
+
+/* ------------------------- */
+/* Rapprochement de l'objectif */
+
+/* Cas où on cherche une solution réalisable -> seules les contraintes importent */
+minimize 1;
+
+/* ------------------------- */
+/* Contraintes */
+
+/* ******* */
+/* Contraintes sur le rapport 40/60 dans chaque division (+/- 5%) */
+
+/* Le nombre total de points de vente */
+subject to rapport_pts_vente :
+	sum {m in DETAILLANTS}
+	div_du_detaillant[m]*nb_pts_vente[m] /* ****** /!\ formule incomplète : comparer au total *** */
+
+/* Le nombre total de vente de spiriteux */
+subject to 
+
+/* Le nombre de points d'huile dans chaque région */
+subject to 
+
+/* Le nombre de détaillants de chaque catégorie */
+subject to 
 
 
