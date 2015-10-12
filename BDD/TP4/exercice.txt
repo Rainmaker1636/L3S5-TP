@@ -1,0 +1,36 @@
+-- 1) 
+select acoul as couleur1a FROM Articles a WHERE NOT EXISTS ( select * FROM Articles a2 WHERE a2.aid <> a.aid AND a.acoul = a2.acoul);
+
+select acoul as couleur1b FROM Articles a WHERE acoul <> ALL (select acoul FROM Articles a2 WHERE a.aid <> a2.aid);
+
+-- 2)
+select anom as article2a FROM Articles a WHERE acoul='rouge' AND NOT EXISTS (select * FROM Articles a2 WHERE a.anom=a2.anom AND a2.acoul='vert');
+
+select anom as article2b FROM Articles a WHERE acoul='rouge' AND anom <> ALL (select anom FROM Articles a2 WHERE a.anom=a2.anom AND a2.acoul='vert');
+
+select anom as article2c FROM Articles a WHERE acoul='rouge' AND anom NOT IN (select anom FROM Articles a2 WHERE a.anom=a2.anom AND a2.acoul='vert');
+
+-- 3)
+select fnom as fournisseur3a FROM Fournisseurs f NATURAL JOIN Catalogue NATURAL JOIN Articles WHERE acoul='rouge' AND prix >= ALL(select prix FROM Catalogue WHERE fid=f.fid);
+
+select fnom as fournisseur3b FROM Fournisseurs f NATURAL JOIN Catalogue c NATURAL JOIN Articles WHERE acoul='rouge' AND NOT EXISTS (select * FROM Catalogue c2 WHERE c2.fid=f.fid AND c2.prix > c.prix);
+
+-- 4)
+select DISTINCT anom as article4a FROM Articles a NATURAL JOIN Catalogue c WHERE EXISTS (select * FROM Catalogue c2 WHERE c.fid<>c2.fid AND c.aid=c2.aid) order by anom;
+
+select DISTINCT anom as article4b FROM Articles a NATURAL JOIN Catalogue c WHERE anom IN (select anom FROM Catalogue c2 WHERE c.fid<>c2.fid AND c.aid=c2.aid) order by anom;
+
+-- 5)
+select DISTINCT fnom as fournisseur5a
+FROM Fournisseurs f NATURAL JOIN Catalogue c NATURAL JOIN Articles a
+WHERE NOT EXISTS (select * FROM Articles a2 WHERE NOT EXISTS (Select * FROM Catalogue WHERE fid=f.fid and aid=a2.aid));
+
+select DISTINCT fnom as fournisseur5b
+FROM Fournisseurs f NATURAL JOIN Catalogue c 
+GROUP BY fid
+HAVING count(DISTINCT aid) = (select count(DISTINCT aid) from Articles);
+
+-- 6)
+SELECT fnom as fournisseur6a FROM Fournisseurs f NATURAL JOIN Catalogue c WHERE NOT EXISTS (select * FROM Catalogue c2 WHERE c.fid<>c2.fid AND c2.prix > c.prix);
+
+
