@@ -33,7 +33,5 @@ OPP=[+]|opp
 {OPP}
       { return new Opp(yytext()); }
 
-
-/* ajouter le cas des espaces et fins de ligne */
-
-/* ajouter les autres tokens */
+[[:space:]$]+
+      {}
