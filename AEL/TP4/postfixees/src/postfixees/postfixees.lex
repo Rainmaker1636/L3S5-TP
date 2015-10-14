@@ -8,6 +8,10 @@ package postfixees;
 
 ENTIER_SIMPLE=[0-9]+
 PLUS=[+]|plus
+MINUS=[-]|minus
+QUO=[/]|quo
+MULT=[*]|mult
+OPP=[+]|opp
 
 %% 
 
@@ -16,6 +20,19 @@ PLUS=[+]|plus
 
 {PLUS}
       { return new Plus(yytext()); }
+
+{MINUS}
+      { return new Minus(yytext()); }
+
+{QUO}
+      { return new Quo(yytext()); }
+
+{MULT}
+      { return new Mult(yytext()); }
+
+{OPP}
+      { return new Opp(yytext()); }
+
 
 /* ajouter le cas des espaces et fins de ligne */
 
