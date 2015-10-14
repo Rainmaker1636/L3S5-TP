@@ -19,19 +19,23 @@ alias la='ls -A'
 alias l='ls -CF'
 
 
-# L2
+#Dossier
+alias ael='cd ~/L3S5-TP/AEL'
+
+## L2
 #alias pdc='cd ~/Documents/l2s4/pdc'
 #alias math='cd ~/Documents/l2s4/math'
 #alias oo='cd ~/Documents/l2s4/oo'
 #alias tw='cd ~/Documents/l2s4/tw2'
 #alias perso='cd ~/Documents/l2s4/Perso'
 #alias asd='cd ~/Documents/l2s4/asd'
-alias ca='ledit ocaml'
 alias www='cd /var/www/html'
 
-#L3
+##L3
 alias coo='cd ~/COO/'
 
+#Logiciel
+alias ca='ledit ocaml'
 alias exaql='export CLASSPATH=$CLASSHPATH:aql.jar'
 alias raboutique='rlwrap java edu.gsu.cs.ra.RA boutique'
 
@@ -41,10 +45,11 @@ alias gexdis='export https_proxy=""'
 
 #Git
 alias ga='git add'
-alias gc='git commit -m'
+alias gco='git commit -m'
 alias gll='git pull'
 alias gsh='git push'
 alias gst='git status'
+alias gck='git checkout'
 
 #Varible environnement
 export EDITOR=gedit
