@@ -1,0 +1,60 @@
+-- 1)
+select anom as article1,count(*) as Nb_Coul FROM Articles GROUP BY anom order by anom; 
+
+-- 2)
+select anom as article2,count(DISTINCT Catalogue.fid) as Nb_Fournisseur,max(prix) as prix_max, min(prix) as prix_min  FROM Articles,Fournisseurs,Catalogue WHERE Articles.aid=Catalogue.aid AND Fournisseurs.fid=Catalogue.fid GROUP BY anom HAVING count(*) >=2 order by avg(prix) DESC;
+
+-- 3) 
+select acoul as couleur3 FROM Articles GROUP BY acoul HAVING count(*)=1 order by acoul;
+
+-- 4) 
+select acoul as couleur4, CAST(avg(prix) as decimal(6,2)) as moyenne 
+FROM Articles,Catalogue 
+WHERE Articles.aid=Catalogue.aid  AND anom NOT LIKE '%Ferrari%' 
+GROUP BY acoul 
+HAVING count(DISTINCT Catalogue.aid)>1 
+order by avg(prix) DESC;
+
+-- 5)
+select anom as article5,acoul as couleur, count(DISTINCT fid) as nb_fournisseur 
+FROM articles natural join catalogue 
+GROUP BY anom,acoul
+order by anom,acoul;
+
+-- 6)
+select anom as article6, count(DISTINCT fid) 
+FROM articles LEFT JOIN catalogue on articles.aid = catalogue.aid
+GROUP BY anom
+order by anom;
+
+-- 7)
+select fnom as fournisseur7,count(DISTINCT anom) as nb_article FROM fournisseurs,catalogue,articles WHERE fournisseurs.fid=Catalogue.fid AND articles.aid=catalogue.aid
+GROUP BY fnom
+HAVING count(DISTINCT anom)>1
+order by fnom;
+
+-- 8)
+select fnom as fournisseur8,anom as article 
+FROM fournisseurs,catalogue,articles
+WHERE fournisseurs.fid=catalogue.fid AND catalogue.aid=articles.aid
+GROUP BY fnom,anom
+HAVING count(DISTINCT acoul)>=2;
+
+-- 9)select DISTINCT anom as article9
+FROM Articles
+WHERE anom IN
+(select anom 
+FROM Articles natural join Catalogue 
+GROUP BY anom
+HAVING count(*)=1)
+order by anom;
+
+-- 10) 
+select substring(anom from 1 for 1) as article10,count(*) as nb
+FROM  (select DISTINCT anom FROM Articles) as article
+group by article10
+order by article10
+
+-- 11)
+
+-- 12) Using nécessite que les deux colonnes aient le même nom alors que pour on les noms peuvent être différents

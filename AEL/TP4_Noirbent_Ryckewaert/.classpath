@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="exemple1/src"/>
+	<classpathentry kind="src" path="postfixees/src"/>
+	<classpathentry kind="lib" path="exemple1/jflex-1.6.1.jar"/>
+	<classpathentry kind="lib" path="jflex-1.6.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="exemple1/bin"/>
+</classpath>
