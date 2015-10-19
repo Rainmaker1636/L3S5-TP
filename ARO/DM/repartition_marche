@@ -12,10 +12,35 @@ Répartition Marché : Lanceur
 reset;
 
 option solver gurobi;
-model repartition_marche.model
+
+/* Question 1 : recherche d'une solution réalisable */
+model repartition_marche_realisable.model
 data repartition_marche.data
 solve;
 
-display , , ;
+display div_du_detaillant;
+
+/* Résultat de l'interpréteur :
+ampl: model repartition_marche
+Gurobi 5.0.2: optimal solution; objective 0
+div_du_detaillant [*] :=
+ M1 0   M12 1   M15 1   M18 0   M20 1   M23 1    M5 1    M8 1
+M10 1   M13 1   M16 0   M19 1   M21 0    M3 0    M6 1    M9 0
+M11 1   M14 1   M17 1    M2 0   M22 0    M4 0    M7 1
+;
+*/
 
 /* ------------------------- */
+
+
+/* Question 2 : optimisation */
+
+/* en somme des écart */
+reset model;
+model repartition_marche_somme.model
+solve;
+
+/* en variation maximale */
+reset model;
+model repartition_marche_variation.model
+solve;

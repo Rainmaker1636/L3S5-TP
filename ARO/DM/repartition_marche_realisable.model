@@ -1,5 +1,3 @@
-/* set DIVISIONS := 0 1; */
-
 set DETAILLANTS;
 set REGIONS;
 set CATEGORIES;
@@ -9,7 +7,7 @@ set CATEGORIES;
 
 /* ******* */
 /* La région dans laquelle il est implanté */
-param region{DETAILLANTS};
+param region{DETAILLANTS} symbolic in REGIONS;
 
 /* Son nombre de vente d'huile */
 param huile{DETAILLANTS} >= 0;
@@ -21,7 +19,7 @@ param nb_pts_vente{DETAILLANTS} >= 0;
 param spiritueux{DETAILLANTS} >= 0;
 
 /* Sa catégorie */
-param categorie{DETAILLANTS};
+param categorie{DETAILLANTS} symbolic in CATEGORIES;
 
 /* ------------------------- */
 /* Paramètre calculés */
@@ -29,17 +27,17 @@ param categorie{DETAILLANTS};
 /* Nombre total de points de ventes */
 param pts_vente_totaux :=
 	sum {m in DETAILLANTS}
-	nb_pts_vente{m};
+	nb_pts_vente[m];
 
 /* Nombre total de vente de spiriteux */
 param spiritueux_totaux :=
 	sum {m in DETAILLANTS}
-	spiritueux{m};
+	spiritueux[m];
 
 /* Nombre de points d'huile dans chaque région */
 param huile_par_region {r in REGIONS} :=
 	sum {m in DETAILLANTS : region[m]=r}
-	huile{m};
+	huile[m];
 
 /* Nombre de détaillants de chaque catégorie */
 param nb_par_categorie{c in CATEGORIES} :=
@@ -51,13 +49,14 @@ param nb_par_categorie{c in CATEGORIES} :=
 
 /* Division à laquelle rattaché chaque détaillant
 div_du_detaillant[m] vaut 0 si m appartient à la division D1, et vaut 1 sinon */
-var div_du_detaillant {m in DETAILLANTS} >= 0, <= 1;
+var div_du_detaillant {m in DETAILLANTS} binary;
 
 /* ------------------------- */
 /* Rapprochement de l'objectif */
 
 /* Cas où on cherche une solution réalisable -> seules les contraintes importent */
-minimize 1;
+minimize res : 0;
+
 
 /* ------------------------- */
 /* Contraintes */
@@ -66,17 +65,39 @@ minimize 1;
 /* Contraintes sur le rapport 40/60 dans chaque division (+/- 5%) */
 
 /* Le nombre total de points de vente */
-subject to rapport_pts_vente :
+subject to rapport_pts_vente_min :
 	sum {m in DETAILLANTS}
-	div_du_detaillant[m]*nb_pts_vente[m] /* ****** /!\ formule incomplète : comparer au total *** */
+	div_du_detaillant[m]*nb_pts_vente[m]*100 / pts_vente_totaux >= 55;
+
+subject to rapport_pts_vente_max :
+	sum {m in DETAILLANTS}
+	div_du_detaillant[m]*nb_pts_vente[m]*100 / pts_vente_totaux <= 65;
 
 /* Le nombre total de vente de spiriteux */
-subject to 
+subject to rapport_spiritueux_min :
+	sum {m in DETAILLANTS}
+	div_du_detaillant[m]*spiritueux[m]*100 / spiritueux_totaux >= 55;
+
+subject to rapport_spiritueux_max :
+	sum {m in DETAILLANTS}
+	div_du_detaillant[m]*spiritueux[m]*100 / spiritueux_totaux <= 65;
 
 /* Le nombre de points d'huile dans chaque région */
-subject to 
+subject to rapport_huile_region_min {r in REGIONS} :
+	sum {m in DETAILLANTS : region[m]=r}
+	div_du_detaillant[m]*huile[m]*100 / huile_par_region[r] >= 55;
+
+subject to rapport_huile_region_max {r in REGIONS} :
+	sum {m in DETAILLANTS : region[m]=r}
+	div_du_detaillant[m]*huile[m]*100 / huile_par_region[r] <= 65;
 
 /* Le nombre de détaillants de chaque catégorie */
-subject to 
+subject to rapport_categorie_min {c in CATEGORIES} :
+	sum {m in DETAILLANTS : categorie[m]=c}
+	div_du_detaillant[m]*100 / nb_par_categorie[c] >= 55;
+
+subject to rapport_categorie_max {c in CATEGORIES} :
+	sum {m in DETAILLANTS : categorie[m]=c}
+	div_du_detaillant[m]*100 / nb_par_categorie[c] <= 65;
 
 
