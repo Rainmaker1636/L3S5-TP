@@ -18,7 +18,7 @@ int multif(func_t f[], int args[], int n){
 			default:
 				wait(&result_wait);
 				if(WIFEXITED(result_wait)){
-					bolean *=  WEXITSTATUS(result_wait);
+					bolean *= WEXITSTATUS(result_wait);
 				} else {
 					bolean *= 0;
 				}

@@ -1,7 +1,7 @@
 ### Modèle pour vos Makefile
 
 ## Compilateur C et éditeur de liens
-CC = gcc
+CC      = gcc
 
 ## Options pour la compilation du C
 CFLAGS  = -Wall -Werror -ansi -pedantic
@@ -14,7 +14,9 @@ CFLAGS += -g
 LDFLAGS  = -g
 
 ## Première cible
-all: multif race observation
+#  « make » sans argument construit sa première cible
+#  Indiquez en dépendance le ou les binaires à construire
+all: exemple
 
 
 ## Compilation séparée
@@ -25,22 +27,16 @@ all: multif race observation
 ## Édition de liens
 #  Définissez une règle par binaire que vous voulez créer
 #  La commande devrait en général être identique pour chaque binaire
-multif:multif.o
+exemple: a.o b.o
 	${CC} ${LDFLAGS} -o $@ $^
 
-race:race.o
-	${CC} ${LDFLAGS} -o $@ $^
+clean:
+	rm *.o || true
 
-observation:observation.o
-	${CC} ${LDFLAGS} -o $@ $^
+realclean: clean
+	rm exemple || true
 
 ## Liste des pseudo-cibles
 #  Ces cibles ne correspondent pas à des fichiers que l'on veut créer,
 #  juste à des séquences que l'on veut pouvoir déclencher
-.PHONY: all clean multif race observation
-
-clean:
-	rm -f *.o
-	rm -f *~
-	rm -f multif race observation
-
+.PHONY: all clean realclean
