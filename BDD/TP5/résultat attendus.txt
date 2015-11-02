@@ -1,0 +1,128 @@
+--- resultats attendus pour le TP5
+-------------------------
+------Q1  ---------------
+    eid    | max  
+-----------+------
+ 552455318 | 3383
+ 274878974 | 6475
+ 556784565 | 7120
+ 242518965 | 4010
+  11564812 | 4010
+ 355548984 | 6900
+ 550156548 | 8430
+ 269734834 | 8430
+ 567354612 | 8430
+ 573284895 | 7120
+ 574489456 | 4103
+ 142519864 | 8430
+ 310454876 | 6900
+ 159542516 | 1530
+ 390487451 | 7120
+ 141582651 | 6475
+(16 rows)
+
+------Q2  ---------------
+--- il y a plusieurs requetes equivalentes. le resultat doit etre:
+
+      enom       
+-----------------
+ Oussama Moulana
+(1 row)
+
+------Q3  ---------------
+--- il y a aux moins deux requetes possible.
+
+     dep     |       arr       | distance 
+-------------+-----------------+----------
+ Los Angeles | Washington D.C. |     2308
+ Los Angeles | Chicago         |     1749
+ Los Angeles | Dallas          |     1251
+ Los Angeles | Boston          |     2606
+ Chicago     | Los Angeles     |     1749
+ Chicago     | New York        |      802
+ Madison     | Detroit         |      319
+ Detroit     | New York        |      470
+ Madison     | New York        |      789
+ Madison     | Chicago         |       84
+ Madison     | Pittsburgh      |      517
+ Madison     | Minneapolis     |      247
+ Minneapolis | New York        |      991
+ Pittsburgh  | New York        |      303
+(14 rows)
+
+
+
+------Q4  ---------------
+-- techniques possibles: 
+--- sous requete avec exists, 
+---- plus facile en utilisant un group by (avec EVERY/bool_and)
+      enom        
+-------------------
+ Anael Klein
+ Boubacar Diallo
+ Etienne Renard
+ Hugo Ermenidis
+ Ivonne Boulala
+ Joris Robillard
+ Linda Mariencourt
+ Nicolas Baudin
+ Tommy Carpentier
+ Valentin Owczarek
+ Victor Goron
+(11 rows)
+
+
+------Q5  ---------------
+--- tres facile avec group by (et test booleen multi-lignes)
+-- egalement faisable avec sous-requetes.
+
+      enom        
+-------------------
+ Anael Klein
+ Tommy Carpentier
+ Etienne Renard
+ Linda Mariencourt
+(4 rows)
+
+
+------Q6  ---------------
+
+       enom        
+-------------------
+ Anael Klein
+ Etienne Renard
+ Joris Robillard
+ Ivonne Boulala
+ Victor Goron
+ Valentin Owczarek
+(6 rows)
+
+
+
+------Q7  ---------------
+-- astuce: faire le max apres avoir retiré le max!
+
+     enom     |    eid    
+--------------+-----------
+ Laura Giacco | 567354612
+(1 row)
+
+------Q8  ---------------
+-- 
+
+------Q9  ---------------
+      enom       | salaire 
+------------------+---------
+ Rachid El Amrani |  152013
+(1 row)
+
+------Q10  ---------------
+     difference     
+--------------------
+ 35320.612903225806
+(1 row)
+
+
+
+
+
