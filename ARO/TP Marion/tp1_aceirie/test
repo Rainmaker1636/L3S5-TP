@@ -1,5 +1,0 @@
-model acerie1.mod
-data acerie1.dat
-solve;
-display qte_produite.lb, qte_produite, qte_produite.ub;
-/* */
