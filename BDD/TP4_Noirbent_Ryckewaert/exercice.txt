@@ -104,17 +104,7 @@ GROUP BY aid
 HAVING min(prix)>100;
 
 -- 13)
-SELECT aid article13
-FROM Catalogue c
-WHERE NOT EXISTS
-(SELECT * FROM Fournisseurs f2
-WHERE c.fid = f2.fid
-AND f2. <> ***** Like %usa
-);
-
-
-
-
+select DISTINCT aid as article13 FROM Catalogue c NATURAL JOIN Fournisseurs f WHERE EXISTS (select * FROM Fournisseurs f2 WHERE f.fid=f2.fid AND f2.fad LIKE '%USA%') order by aid;
 
 
 

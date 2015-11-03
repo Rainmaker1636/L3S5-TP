@@ -13,9 +13,14 @@ import jade.Direction;
 %state COMMENTAIRE
 %state COMMENTAIRE_MULTI
 %state STEP
+%state JUMPX
+%state JUMPY
+%state TIMES
 
 %{
 	int compteurCommentaire = 0;
+	int lastInt;
+	StepLength pas=new StepLength(1);		
 %}
 
 SEPARATEUR=[\s\n]
@@ -24,7 +29,6 @@ SEPARATEUR=[\s\n]
 
 lever|LEVER
 	{ return new PenMode(false);}
-
 baisser|BAISSER
 	{ return new PenMode(true);}
 nord|NORD
@@ -37,24 +41,41 @@ ouest|OUEST
 	{ return new Move(Direction.WEST);}
 
 
+\/\/[^\n]*
+{
+	compteurCommentaire++;
+	yybegin(COMMENTAIRE);
+}
+
+\/\*([^*]+|[*]+[^/])*
+{
+	compteurCommentaire++;
+	yybegin(COMMENTAIRE_MULTI);
+}
+
+
+(pas|PAS)
+{
+	yybegin(STEP);
+}
+
+(aller|ALLER)
+{
+	yybegin(JUMPX);
+}
+
 {SEPARATEUR}
 	{}
 
-"//"
-{
-	yybegin(COMMENTAIRE);
-	compteurCommentaire++;
+<TIMES>{
+ 	\s*fois
+	{	
+		return new Repeat(lastInt);
+	}
 }
 
-"/*"
-{
-	yybegin(COMMENTAIRE_MULTI);
-	compteurCommentaire++;
-}
 
 <COMMENTAIRE>{
-	[^\n]
-	{}
 	"\n"
 	{
 		compteurCommentaire--;
@@ -65,8 +86,6 @@ ouest|OUEST
 }
 
 <COMMENTAIRE_MULTI>{
-	[^*]+[*][^/]
-	{}
 	"*/"
 	{
 		compteurCommentaire--;
@@ -74,24 +93,40 @@ ouest|OUEST
 			yybegin(YYINITIAL);
 		}
 	}
-	
 }
-Si état PAS alors <yybegin(STEP)>
+
 <STEP>{
-	(pas|PAS)\s*
+	[0-9]+
 	{
-		[0-9]+
-		{
-			yybegin(YYINITIAL);
-			return new StepLength(Integer.parseInt(yytext()););
-		}
-	}
-		
-	
+		pas=new StepLength(Integer.parseInt(yytext()));
+		return pas;
+
+	}	
 }
 
 
+<JUMPX>{
+	-?[0-9]+
+	{
+		lastInt=Integer.parseInt(yytext());
+		yybegin(JUMPY);
+	}
+}
 
+
+<JUMPY>{
+	-?[0-9]+
+	{
+		return new Jump(lastInt,Integer.parseInt(yytext()));
+	}
+}
+
+
+[0-9]+
+{
+	lastInt=Integer.parseInt(yytext());
+	yybegin(TIMES);
+}
 [^/\s\n]+
-	{ return new Unknown("bonjour");}
+	{ return new Unknown(yytext());}
 
