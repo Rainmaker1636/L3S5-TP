@@ -70,4 +70,28 @@ void sigchld_handler(int sig)
 
 void waitfg(pid_t pid){
   struct job_t *j = jobs_getjobpid(pid);
-  if (!j
+  if (!j) return
+while (j->jb_pid==pid && j->jb_state=FG)
+	sleep(1);
+}
+
+/* ********************************************* */
+// Exo 10
+
+/*
+creer tube
+creer fils 1
+	- ferme lecture tube
+	- dup sortie standard par écriture tube
+	- ferme écriture tube
+	- exec
+creer fils 2
+	- ferme écriture tube
+	- dup entrée standard par lecture tube
+	- ferme lecture tube
+	- exec
+ferme lecture tube
+ferme écriture tube
+*/
+
+
