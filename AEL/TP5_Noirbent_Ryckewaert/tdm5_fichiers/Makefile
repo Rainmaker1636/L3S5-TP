@@ -12,7 +12,11 @@ comp:$(SRCPATH)Test.java
 test:comp
 	@echo "\nExecution du test";
 	@java -cp bin jadelex.Test testToken.txt;
-clean :
+
+jadeRunner:
+	java -cp src:bin -d bin src/jade/JadeRunner.java
+
+clean:
 	rm *~
 
 %.ylex:%.lex
