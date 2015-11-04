@@ -15,7 +15,7 @@ LDFLAGS  = -g
 
 ## Première cible
 all: do
-
+test : clean do testsh
 
 ## Compilation séparée
 #  Le .o doit être recompilé dès que le .c ou le .h (s'il existe) change
@@ -27,6 +27,9 @@ all: do
 #  La commande devrait en général être identique pour chaque binaire
 do:do.o makeargv.o
 	${CC} ${LDFLAGS} -o $@ $^
+
+testsh: all
+	./test.sh
 
 ## Liste des pseudo-cibles
 #  Ces cibles ne correspondent pas à des fichiers que l'on veut créer,

@@ -3,7 +3,6 @@
 
 SRCPATH=src/jadelex/
 
-
 gen:$(SRCPATH)jade.lex
 	java -jar ../jflex-1.6.1.jar $(SRCPATH)jade.lex
 
@@ -13,6 +12,12 @@ comp:$(SRCPATH)Test.java
 test:comp
 	@echo "\nExecution du test";
 	@java -cp bin jadelex.Test testToken.txt;
+
+jadeRunner:
+	java -cp src:bin -d bin src/jade/JadeRunner.java
+
+clean:
+	rm *~
 
 %.ylex:%.lex
 	java -jar jflex-1.6.1.jar $*.lex

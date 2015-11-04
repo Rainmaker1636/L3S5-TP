@@ -3,6 +3,7 @@
 
 #Dossier logiciel
 *.idea
+*org.eclipse*
 
 # Fichiers Temporaires
 *~

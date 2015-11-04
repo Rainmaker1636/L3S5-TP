@@ -1,0 +1,117 @@
+-- 1) 
+select acoul as couleur1a FROM Articles a WHERE NOT EXISTS ( select * FROM Articles a2 WHERE a2.aid <> a.aid AND a.acoul = a2.acoul);
+
+select acoul as couleur1b FROM Articles a WHERE acoul <> ALL (select acoul FROM Articles a2 WHERE a.aid <> a2.aid);
+
+-- 2)
+select anom as article2a FROM Articles a WHERE acoul='rouge' AND NOT EXISTS (select * FROM Articles a2 WHERE a.anom=a2.anom AND a2.acoul='vert');
+
+select anom as article2b FROM Articles a WHERE acoul='rouge' AND anom <> ALL (select anom FROM Articles a2 WHERE a.anom=a2.anom AND a2.acoul='vert');
+
+select anom as article2c FROM Articles a WHERE acoul='rouge' AND anom NOT IN (select anom FROM Articles a2 WHERE a.anom=a2.anom AND a2.acoul='vert');
+
+-- 3)
+select fnom as fournisseur3a FROM Fournisseurs f NATURAL JOIN Catalogue NATURAL JOIN Articles WHERE acoul='rouge' AND prix >= ALL(select prix FROM Catalogue WHERE fid=f.fid);
+
+select fnom as fournisseur3b FROM Fournisseurs f NATURAL JOIN Catalogue c NATURAL JOIN Articles WHERE acoul='rouge' AND NOT EXISTS (select * FROM Catalogue c2 WHERE c2.fid=f.fid AND c2.prix > c.prix);
+
+-- 4)
+select DISTINCT anom as article4a FROM Articles a NATURAL JOIN Catalogue c WHERE EXISTS (select * FROM Catalogue c2 WHERE c.fid<>c2.fid AND c.aid=c2.aid) order by anom;
+
+select DISTINCT anom as article4b FROM Articles a NATURAL JOIN Catalogue c WHERE anom IN (select anom FROM Catalogue c2 WHERE c.fid<>c2.fid AND c.aid=c2.aid) order by anom;
+
+-- 5)
+select DISTINCT fnom as fournisseur5a
+FROM Fournisseurs f NATURAL JOIN Catalogue c NATURAL JOIN Articles a
+WHERE NOT EXISTS (select * FROM Articles a2 WHERE NOT EXISTS (Select * FROM Catalogue WHERE fid=f.fid and aid=a2.aid));
+
+select DISTINCT fnom as fournisseur5b
+FROM Fournisseurs f NATURAL JOIN Catalogue c 
+GROUP BY fid
+HAVING count(DISTINCT aid) = (select count(DISTINCT aid) from Articles);
+
+-- 6)
+SELECT fnom as fournisseur6a FROM Fournisseurs f NATURAL JOIN Catalogue c WHERE NOT EXISTS (select * FROM Catalogue c2 WHERE c.fid<>c2.fid AND c2.prix > c.prix);
+
+select fnom as fournisseur6b FROM Fournisseurs f NATURAL JOIN Catalogue c WHERE prix > ALL (select prix FROM Catalogue c2 WHERE f.fid <> c2.fid);
+
+-- 7)
+SELECT anom article7, min(prix), max(prix) FROM Articles a NATURAL JOIN Catalogue c
+WHERE EXISTS (select * FROM Catalogue c2 WHERE c.fid <> c2.fid AND c.aid = c2.aid) GROUP BY anom;
+
+-- 8)
+SELECT fnom as fournisseur8a, anom
+FROM Fournisseurs f NATURAL JOIN Articles a NATURAL JOIN Catalogue c
+WHERE EXISTS (select * FROM Catalogue c2 NATURAL JOIN Articles a2 WHERE a.acoul <> a2.acoul AND a.anom = a2.anom AND c.fid = c2.fid) GROUP BY anom, fnom;
+
+SELECT fnom as fournisseur8b, anom
+FROM Fournisseurs f NATURAL JOIN Articles a NATURAL JOIN Catalogue c
+WHERE fid = SOME (select c2.fid FROM Catalogue c2 NATURAL JOIN Articles a2 WHERE a.acoul <> a2.acoul AND a.anom = a2.anom AND c.fid = c2.fid) GROUP BY anom, fnom;
+
+-- 9)
+SELECT fid as fournisseur9 FROM Catalogue c
+GROUP BY fid
+HAVING count(c.aid) > ALL
+(SELECT count(c2.aid) FROM Catalogue c2
+WHERE c2.fid <> c.fid
+GROUP BY fid);
+
+-- 10)
+SELECT anom article10a
+FROM Articles a NATURAL JOIN Catalogue c
+WHERE NOT EXISTS
+(SELECT * FROM Articles a2 NATURAL JOIN Catalogue c2
+WHERE a2.anom = a.anom AND c2.fid <> c.fid);
+
+SELECT anom article10b
+FROM Articles a NATURAL JOIN Catalogue c
+GROUP BY anom
+HAVING count(fid) < 2;
+
+-- 11)
+SELECT fnom as fournisseur11a
+FROM Fournisseurs f
+WHERE NOT EXISTS
+(SELECT * FROM Catalogue c2
+WHERE c2.fid = f.fid);
+
+SELECT fnom as fournisseur11b
+FROM Fournisseurs f
+WHERE fid <> ALL
+(SELECT c2.fid FROM Catalogue c2);
+
+SELECT fnom as fournisseur11c
+FROM Fournisseurs f
+WHERE fid NOT IN
+(SELECT c2.fid FROM Catalogue c2);
+
+-- 12)
+SELECT aid article12a
+FROM Catalogue c
+WHERE NOT EXISTS
+(SELECT * FROM Catalogue c2
+WHERE c.aid = c2.aid AND c2.prix <= 100);
+
+SELECT aid article12b
+FROM Catalogue c
+WHERE aid <> ALL
+(SELECT c2.aid FROM Catalogue c2
+WHERE c.aid = c2.aid AND c2.prix <= 100);
+
+SELECT aid article12c
+FROM Catalogue c
+GROUP BY aid
+HAVING min(prix)>100;
+
+-- 13)
+select DISTINCT aid as article13 FROM Catalogue c NATURAL JOIN Fournisseurs f WHERE EXISTS (select * FROM Fournisseurs f2 WHERE f.fid=f2.fid AND f2.fad LIKE '%USA%') order by aid;
+
+
+
+
+
+
+
+
+
+
