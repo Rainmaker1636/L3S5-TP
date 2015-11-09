@@ -42,8 +42,13 @@ Ensuite il fera un reset du model, rechargera le modéle corrsepondant et lancer
 \section{Fonctionnement}
 
 N'ayant que deux division à affecter, le problème de se rapprocher du rapport 40/60 est équivalent à se rappocher de 60\% du total pour la 2\ieme{} division.\\
-Nous avons donc fait le choix de leur attribuer la valeursd'un booléen (0 pour la 1\iere{} division, 1 pour la 2\ieme{}).
+Nous avons donc fait le choix de leur attribuer la valeursd'un booléen (0 pour la 1\iere{} division, 1 pour la 2\ieme{}). Nous multiplions alors les valeurs dans les domaines
+recherchés (nombre de points de vente, ...) par la valeur du booléen correspondant, puis nous en faisont la somme que nous divisons par le total dans ce domaine,
+le nombre obtenu correspond au rapport pour la division 2 uniquement.\\
 
+Nous avons fait des totaux dans les domaines recherchés (nombre de points de vente, ...) des paramètres calculé afin de rendre leur utilisation plus lisible.\\
+La recherche d'une solution réalisable ne necessite ici pas de minimisation de l'objectif.\\
+Bien qu'il soit possible de faire une contrainte contenant deux inégalités, nous avons préferé distinguer les contraintes portant sur le minimum de celles portant sur le maximum.\\
 
 \section{Résultat}
 Réponse donnée par Ampl lors de la recherche d'une solution réalisable :
@@ -56,7 +61,29 @@ M10 1   M13 1   M16 0   M19 1   M21 0    M3 0    M6 1    M9 0\\
 M11 1   M14 1   M17 1    M2 0   M22 0    M4 0    M7 1\\
 ;\\
 
-\chapter{Recherche avec minimisation des valeurs absolues}
+\chapter{Recherche avec minimisation de la somme des variations}
+
+\section{Fonctionnement}
+
+Nous avons repris le modèle de la solution réalisable, nous n'y avons rien soustrait.\\
+Nous avons ajouté un paramètre calculé dans chaque dommaine égale à 60\% du total, il correspond à la valeur vers laquelle le rapport de la division 2 doit tendre.\\
+Nous avons ajouté une variable auxiliaire pour représenter la somme des variations. Nous lui affectons sa valeur par l'utilisation d'une contrainte, l'objectif est la minimisation de cette contrainte.\\
+
+\section{Problémes rencontrés}
+Nous nous somme basés sur le support de cours (page 28, 2.6.1) pour définir ce fonctionnement mais nous ne sommes pas parvenus à déterminer ce que devait
+contenir les membres à additionner dans la contrainte.
+
+\chapter{Recherche avec minimisation de la variation maximale}
+
+\section{Fonctionnement}
+
+Nous avons repris le modèle de la solution réalisable, nous n'y avons rien soustrait.\\
+Nous avons ajouté une variable auxiliaire pour représenter le maximum, ainsi que deux contraintes pour chaque domaine recherché pour lui attibuer
+sa valeur comme étant supérieure ou égale à chacune des variations (les deux contraintes permettent de l'obtenir en valeur absolue des variations).\\
+L'objectif étant de miniser cette contrainte, sa valeur viendra égaliser le maximum des variations et tendra à le minimiser.\\
+
+\section{Problémes rencontrés}
+Nous avons manqué de temps pour implémenter ce fonctionnement.
 
 \appendix
 %\part{Annexe}
