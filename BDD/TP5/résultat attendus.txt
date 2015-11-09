@@ -1,62 +1,154 @@
---- resultats attendus pour le TP5
--------------------------
-------Q1  ---------------
+--- cree le 9/11/2015 a partir du script de creation en ligne a ce jour
+--- seule correction, remplacer en l'AID 17 le second 16.
+
+----remarque: toutes les requetes comportent un ORDER BY supplementaire pour vous faciliter la comparaison
+
+----- Q1
+
+---req A
     eid    | max  
 -----------+------
- 552455318 | 3383
- 274878974 | 6475
- 556784565 | 7120
- 242518965 | 4010
   11564812 | 4010
- 355548984 | 6900
- 550156548 | 8430
+ 141582651 | 6475
+ 142519864 | 8430
+ 159542516 | 1530
+ 242518965 | 4010
  269734834 | 8430
+ 274878974 | 6475
+ 310454876 | 6900
+ 355548984 | 6900
+ 390487451 | 7120
+ 550156548 | 8430
+ 552455318 | 3383
+ 556784565 | 7120
  567354612 | 8430
  573284895 | 7120
  574489456 | 4103
- 142519864 | 8430
- 310454876 | 6900
- 159542516 | 1530
- 390487451 | 7120
- 141582651 | 6475
 (16 rows)
 
-------Q2  ---------------
---- il y a plusieurs requetes equivalentes. le resultat doit etre:
+(END)
 
+
+---req B
+    eid    | portee 
+-----------+--------
+  11564812 |   4010
+ 141582651 |   6475
+ 142519864 |   8430
+ 159542516 |   1530
+ 242518965 |   4010
+ 269734834 |   8430
+ 274878974 |   6475
+ 310454876 |   6900
+ 355548984 |   6900
+ 390487451 |   7120
+ 550156548 |   8430
+ 552455318 |   3383
+ 556784565 |   7120
+ 567354612 |   8430
+ 573284895 |   7120
+ 574489456 |   4103
+(16 rows)
+
+(END)
+
+
+
+
+----- Q2
+
+--- req A
       enom       
 -----------------
  Oussama Moulana
 (1 row)
 
-------Q3  ---------------
---- il y a aux moins deux requetes possible.
+---req B
+      enom       
+-----------------
+ Oussama Moulana
+(1 row)
+
+
+
+---- req C
+
+
+----- Q3
+--- req A
 
      dep     |       arr       | distance 
 -------------+-----------------+----------
- Los Angeles | Washington D.C. |     2308
- Los Angeles | Chicago         |     1749
- Los Angeles | Dallas          |     1251
- Los Angeles | Boston          |     2606
- Chicago     | Los Angeles     |     1749
- Chicago     | New York        |      802
+ Madison     | Chicago         |       84
+ Madison     | Minneapolis     |      247
+ Pittsburgh  | New York        |      303
  Madison     | Detroit         |      319
  Detroit     | New York        |      470
- Madison     | New York        |      789
- Madison     | Chicago         |       84
  Madison     | Pittsburgh      |      517
- Madison     | Minneapolis     |      247
+ Madison     | New York        |      789
+ Chicago     | New York        |      802
  Minneapolis | New York        |      991
- Pittsburgh  | New York        |      303
+ Los Angeles | Dallas          |     1251
+ Los Angeles | Chicago         |     1749
+ Chicago     | Los Angeles     |     1749
+ Los Angeles | Washington D.C. |     2308
+ Los Angeles | Boston          |     2606
 (14 rows)
 
 
+--- req B
 
-------Q4  ---------------
--- techniques possibles: 
---- sous requete avec exists, 
----- plus facile en utilisant un group by (avec EVERY/bool_and)
-      enom        
+     dep     |       arr       | distance 
+-------------+-----------------+----------
+ Madison     | Chicago         |       84
+ Madison     | Minneapolis     |      247
+ Pittsburgh  | New York        |      303
+ Madison     | Detroit         |      319
+ Detroit     | New York        |      470
+ Madison     | Pittsburgh      |      517
+ Madison     | New York        |      789
+ Chicago     | New York        |      802
+ Minneapolis | New York        |      991
+ Los Angeles | Dallas          |     1251
+ Los Angeles | Chicago         |     1749
+ Chicago     | Los Angeles     |     1749
+ Los Angeles | Washington D.C. |     2308
+ Los Angeles | Boston          |     2606
+(14 rows)
+
+(END)
+
+
+
+
+----- Q4
+--- req A
+  ---enom        
+-------------------
+ Anael Klein
+ Astelia Massamba
+ Boubacar Diallo
+ Etienne Renard
+ Hakim Taleb
+ Hugo Ermenidis
+ Ivonne Boulala
+ Joris Robillard
+ Linda Mariencourt
+ Nicolas Baudin
+ Tommy Carpentier
+ Valentin Owczarek
+ Victor Goron
+(13 rows)
+
+(END)
+
+
+
+
+
+----- Q5
+--- req A (EVERY)
+       enom        
 -------------------
  Anael Klein
  Boubacar Diallo
@@ -71,58 +163,87 @@
  Victor Goron
 (11 rows)
 
+(END)
 
-------Q5  ---------------
---- tres facile avec group by (et test booleen multi-lignes)
--- egalement faisable avec sous-requetes.
+
+
+
+
+----- Q6
 
       enom        
 -------------------
  Anael Klein
- Tommy Carpentier
  Etienne Renard
- Linda Mariencourt
-(4 rows)
-
-
-------Q6  ---------------
-
-       enom        
--------------------
- Anael Klein
- Etienne Renard
- Joris Robillard
  Ivonne Boulala
- Victor Goron
+ Joris Robillard
  Valentin Owczarek
+ Victor Goron
 (6 rows)
 
 
+----- Q7
 
-------Q7  ---------------
--- astuce: faire le max apres avoir retiré le max!
-
-     enom     |    eid    
---------------+-----------
- Laura Giacco | 567354612
+   enom     |    eid    
+-------------+-----------
+ Ana Bozianu | 269734834
 (1 row)
 
-------Q8  ---------------
--- 
+----- Q8
+--- req A
+    eid    |       enom        
+-----------+-------------------
+  90873519 | Hakim Taleb
+ 310454876 | Boubacar Diallo
+ 355548984 | Hugo Ermenidis
+ 356187925 | Astelia Massamba
+ 390487451 | Linda Mariencourt
+ 573284895 | Tommy Carpentier
+ 574489456 | Nicolas Baudin
+(7 rows)
 
-------Q9  ---------------
-      enom       | salaire 
-------------------+---------
- Rachid El Amrani |  152013
-(1 row)
 
-------Q10  ---------------
+---req B
+   eid    |       enom        
+-----------+-------------------
+  90873519 | Hakim Taleb
+ 310454876 | Boubacar Diallo
+ 355548984 | Hugo Ermenidis
+ 356187925 | Astelia Massamba
+ 390487451 | Linda Mariencourt
+ 573284895 | Tommy Carpentier
+ 574489456 | Nicolas Baudin
+(7 rows)
+
+--- req C: ressemble mais resultat est different, donc faux!
+    eid    |       enom       
+-----------+------------------
+  90873519 | Hakim Taleb
+ 310454876 | Boubacar Diallo
+ 355548984 | Hugo Ermenidis
+ 356187925 | Astelia Massamba
+ 574489456 | Nicolas Baudin
+(5 rows)
+
+----- Q9
+--- il n'y a pas d'employe non-pilote avec cette propriete!
+ enom | salaire 
+------+---------
+(0 rows)
+
+----- Q10
+--- req A
+
      difference     
 --------------------
- 35320.612903225806
+ 42400.709677419355
 (1 row)
 
-
+--- req B (avec vues)
+    difference     
+--------------------
+ 42400.709677419355
+(1 row)
 
 
 
