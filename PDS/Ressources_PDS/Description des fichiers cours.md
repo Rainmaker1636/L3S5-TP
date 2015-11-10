@@ -48,3 +48,16 @@ tentative de contourner l'erreur de segmentation
 exemple d'une erreur : affichage du 2ème élément d'une liste à 1 élèment
 
 
+##08
+###mmap
+Exemple de partage de la mémoire entre les fils
+Problème lors de l'incrémentation de la mémoire : écrasement de ce que fait l'autre processus si après le chargement en registre
+-> chargement, incrémentation, affectation
+
+avec Sémaphore : beaucoup de temps passé dans le noyau pour départager les processus (mais nécessaire)
+
+###prodcons
+Implémentation du problème producteur / consomateur
+
+###philo
+Implémentation du probllème des philosophes

@@ -6,6 +6,12 @@ bactrace : affiche l'état de la pile au moment de l'erreur
 -> associées ses commandes permettent de retrouver la ligne ayant provoquée une erreur de segmentation
 voir aussi outil ddb
 
+##Commande
+time : temps d'execution des commandes
+temps dans le noyau, temps dans le code et temps total (/!\ multi-core)
+
+strace (option -fork) : trace les appels systèmes
+
 ##Descripteur de fichiers
 
 
@@ -65,4 +71,24 @@ shell : commande1 | commande2
 	
 dup() : remplacement d'un file descripteur par un auutre (sortie standard par tube par exemple) (man 2)
 
+##Mémoire partagée
+mmap :
+
+gestion fine de la mémoire peut être plus couteux en méoire qu'uune affectation large
+
+Section critique -> Execution en "Exclusion mutuelle" ou "Atommique d'une section de code"
+Sémaphore : ensemble de jeton, type sem_t
+Edition de lien avecc -pthread
+
+Problème des producteur/consomateurs
+1 file (ou un tableau avec pointeur)
+2 sémaphores : un "libre" pour les prod, un "occupé" pour les conso
+producteur : prend dans libre et rend dans occupé
+consommateur : idem inversé
+
+Problème des philosophes
+interblocage (ou deadblock)
+- possibilité de cassage de symétrie (pour nombre paire de philisophes)
+- option pour essayer de prendre pendant un certain temps
+- Versions récentes : possibilité de prendre plusieurs sémaphores en une fois
 
