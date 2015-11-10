@@ -29,14 +29,12 @@ drop view if exists volCheapCdgNou;
 drop view if exists minPorteedePilotedePleindeuro;
 
 create view minPorteedePilotedePleindeuro as
-select min(portee) as portee2 from pilote
+select min(portee) as portee from pilote
 group by eid,salaire
 having  salaire > 100000;
 
-select dep,arr from vols, minPorteedePilotedePleindeuro as pv2
-where not exists
-(select * from pv2
-where distance > portee2);
+select dep,arr,distance from vols
+where distance <= ALL (select portee FROM minPorteedePilotedePleindeuro);
 
 drop view if exists minPorteedePilotedePleindeuro;
 
