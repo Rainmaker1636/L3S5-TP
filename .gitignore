@@ -1,18 +1,36 @@
+#script
+*refresh_pds
+
+
+#Latex
+*.aux
+*.log
+*.toc
+*.backup
+
+
 #Dossier logiciel
 *.idea
 *org.eclipse*
+
+
 
 # Fichiers Temporaires
 *~
 *.DS_Store
 */__MACOSX/*
 
+
+
 # Documentation
 */doc/*
+
+
 
 # Archives
 *.zip
 *.tar.gz
+
 
 # Images
 *.png

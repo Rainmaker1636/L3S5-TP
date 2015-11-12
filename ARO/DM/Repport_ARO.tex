@@ -1,0 +1,219 @@
+\documentclass[a4paper,12pt,oneside]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage[frenchb]{babel}
+\usepackage{geometry}
+\geometry{hmargin=2.5cm,vmargin=1.5cm}
+\setlength{\parindent}{0pt}
+
+% Title Page
+\title{Probléme de répartition d’un marché}
+\author{Valentin Ryckewaert \and Marion Noirbent}
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+%\part{Travail réalisé}
+\chapter{Introduction}
+
+\section{Organisation de l'environnement}
+Notre environnement se compose des fichiers suivant :\\
+\begin{itemize}
+\item Le fichier "repartition\_marche" est un script qui automatise la configuration et la résolution par Ampl.
+\item Le fichier "repartition\_marche.data" fourni, que nous avons utilisé sans le modifiier.
+\item Le fichier "repartition\_marche\_realisable.model" qui modélise la recherche d'une solution réalisable.
+\item Le fichier "repartition\_marche\_somme.model" qui modélise la recherche d'une solution minimisant la somme des variations.
+\item Le fichier "repartition\_marche\_variation.model" qui modélise la recherche d'une solution minimisant la variation maximale.
+\end{itemize}
+
+\section{Utilisation du script}
+Le script est chargé dans Ampl par la commande :  model repartition\_marche\\
+
+Sa première action est un reset, afin de s'assurer que le script s'exectute dans un environnement propre.\\
+Ensuite il configure le solver sur Gurobi, un détaillant ne pouvant pas appartenir à 0.8 à une division.\\
+Puis il charge le fichier de data et le premier modèle (celui de recherche d'une solution réalisable) et lance la résolution.\\
+Ensuite il fera un reset du model, rechargera le modéle corrsepondant et lancera sa résolution pour la minimisation la somme des variations puis pour la minimisation de la variation maximale.
+
+\chapter{Recherche d'une solution réalisable}
+
+\section{Fonctionnement}
+
+N'ayant que deux division à affecter, le problème de se rapprocher du rapport 40/60 est équivalent à se rappocher de 60\% du total pour la 2\ieme{} division.\\
+Nous avons donc fait le choix de leur attribuer la valeursd'un booléen (0 pour la 1\iere{} division, 1 pour la 2\ieme{}). Nous multiplions alors les valeurs dans les domaines
+recherchés (nombre de points de vente, ...) par la valeur du booléen correspondant, puis nous en faisont la somme que nous divisons par le total dans ce domaine,
+le nombre obtenu correspond au rapport pour la division 2 uniquement.\\
+
+Nous avons fait des totaux dans les domaines recherchés (nombre de points de vente, ...) des paramètres calculé afin de rendre leur utilisation plus lisible.\\
+La recherche d'une solution réalisable ne necessite ici pas de minimisation de l'objectif.\\
+Bien qu'il soit possible de faire une contrainte contenant deux inégalités, nous avons préferé distinguer les contraintes portant sur le minimum de celles portant sur le maximum.\\
+
+\section{Résultat}
+Réponse donnée par Ampl lors de la recherche d'une solution réalisable :
+\newline
+
+Gurobi 5.0.2: optimal solution; objective 0\\
+div\_du\_detaillant [*] :=\\
+ M1 0   M12 1   M15 1   M18 0   M20 1   M23 1    M5 1    M8 1\\
+M10 1   M13 1   M16 0   M19 1   M21 0    M3 0    M6 1    M9 0\\
+M11 1   M14 1   M17 1    M2 0   M22 0    M4 0    M7 1\\
+;\\
+
+\chapter{Recherche avec minimisation de la somme des variations}
+
+\section{Fonctionnement}
+
+Nous avons repris le modèle de la solution réalisable, nous n'y avons rien soustrait.\\
+Nous avons ajouté un paramètre calculé dans chaque dommaine égale à 60\% du total, il correspond à la valeur vers laquelle le rapport de la division 2 doit tendre.\\
+Nous avons ajouté une variable auxiliaire pour représenter la somme des variations. Nous lui affectons sa valeur par l'utilisation d'une contrainte, l'objectif est la minimisation de cette contrainte.\\
+
+\section{Problémes rencontrés}
+Nous nous somme basés sur le support de cours (page 28, 2.6.1) pour définir ce fonctionnement mais nous ne sommes pas parvenus à déterminer ce que devait
+contenir les membres à additionner dans la contrainte.
+
+\chapter{Recherche avec minimisation de la variation maximale}
+
+\section{Fonctionnement}
+
+Nous avons repris le modèle de la solution réalisable, nous n'y avons rien soustrait.\\
+Nous avons ajouté une variable auxiliaire pour représenter le maximum, ainsi que deux contraintes pour chaque domaine recherché pour lui attibuer
+sa valeur comme étant supérieure ou égale à chacune des variations (les deux contraintes permettent de l'obtenir en valeur absolue des variations).\\
+L'objectif étant de miniser cette contrainte, sa valeur viendra égaliser le maximum des variations et tendra à le minimiser.\\
+
+\section{Problémes rencontrés}
+Nous avons manqué de temps pour implémenter ce fonctionnement.
+
+\appendix
+%\part{Annexe}
+\chapter{repartition\_marche}
+
+reset;\\
+
+option solver gurobi;\\
+
+/* Question 1 : recherche d'une solution réalisable */\\
+model repartition\_marche realisable.model\\
+data repartition\_marche.data\\
+solve;\\
+
+display div\_du\_detaillant;\\
+
+
+/* Question 2 : optimisation */\\
+
+/* en somme des écart */\\
+reset model;\\
+model repartition\_marche\_somme.model\\
+solve;\\
+
+/* en variation maximale */\\
+reset model;\\
+model repartition\_marche\_variation.model\\
+solve;\\
+
+\chapter{repartition\_marche\_realisable.model}
+set DETAILLANTS;\\
+set REGIONS;\\
+set CATEGORIES;\\
+
+/* ------------------------- */\\
+/* Paramètres caractérisant un détaillant */\\
+
+/* ******* */\\
+/* La région dans laquelle il est implanté */\\
+param region\{DETAILLANTS\} symbolic in REGIONS;\\
+
+/* Son nombre de vente d'huile */\\
+param huile\{DETAILLANTS\} >= 0;\\
+
+/* Son nombre de points de vente */\\
+param nb\_pts\_vente\{DETAILLANTS\} >= 0;\\
+
+/* Son nombre de vente de spiriteux */\\
+param spiritueux\{DETAILLANTS\} >= 0;\\
+
+/* Sa catégorie */\\
+param categorie\{DETAILLANTS\} symbolic in CATEGORIES;\\
+
+/* ------------------------- */\\
+/* Paramètre calculés */\\
+
+/* Nombre total de points de ventes */\\
+param pts\_vente\_totaux :=\\
+	sum \{m in DETAILLANTS\}\\
+	nb\_pts\_vente[m];\\
+
+/* Nombre total de vente de spiriteux */\\
+param spiritueux\_totaux :=\\
+	sum \{m in DETAILLANTS\}\\
+	spiritueux[m];\\
+
+/* Nombre de points d'huile dans chaque région */\\
+param huile\_par\_region \{r in REGIONS\} :=\\
+	sum \{m in DETAILLANTS : region[m]=r\}\\
+	huile[m];\\
+
+/* Nombre de détaillants de chaque catégorie */\\
+param nb\_par\_categorie\{c in CATEGORIES\} :=\\
+	sum \{m in DETAILLANTS : categorie[m]=c\}\\
+	1;\\
+
+/* ------------------------- */\\
+/* Répartition recherchée */\\
+
+/* Division à laquelle rattaché chaque détaillant\\
+div\_du\_detaillant[m] vaut 0 si m appartient à la division D1, et vaut 1 sinon */\\
+var div\_du\_detaillant \{m in DETAILLANTS\} binary;\\
+
+/* ------------------------- */\\
+/* Rapprochement de l'objectif */\\
+
+/* Cas où on cherche une solution réalisable -> seules les contraintes importent */\\
+minimize res : 0;\\
+
+
+/* ------------------------- */\\
+/* Contraintes */\\
+
+/* ******* */\\
+/* Contraintes sur le rapport 40/60 dans chaque division (+/- 5\%) */\\
+
+/* Le nombre total de points de vente */\\
+subject to rapport\_pts\_vente\_min :\\
+	sum \{m in DETAILLANTS\}\\
+	div\_du\_detaillant[m]*nb\_pts\_vente[m]*100 / pts\_vente\_totaux >= 55;\\
+
+subject to rapport\_pts\_vente\_max :\\
+	sum \{m in DETAILLANTS\}\\
+	div\_du\_detaillant[m]*nb\_pts\_vente[m]*100 / pts\_vente\_totaux <= 65;\\
+
+/* Le nombre total de vente de spiriteux */\\
+subject to rapport\_spiritueux\_min :\\
+	sum \{m in DETAILLANTS\}\\
+	div\_du\_detaillant[m]*spiritueux[m]*100 / spiritueux\_totaux >= 55;\\
+
+subject to rapport\_spiritueux\_max :\\
+	sum \{m in DETAILLANTS\}\\
+	div\_du\_detaillant[m]*spiritueux[m]*100 / spiritueux\_totaux <= 65;\\
+
+/* Le nombre de points d'huile dans chaque région */\\
+subject to rapport\_huile\_region\_min \{r in REGIONS\} :\\
+	sum \{m in DETAILLANTS : region[m]=r\}\\
+	div\_du\_detaillant[m]*huile[m]*100 / huile\_par\_region[r] >= 55;\\
+
+subject to rapport\_huile\_region\_max \{r in REGIONS\} :\\
+	sum \{m in DETAILLANTS : region[m]=r\}\\
+	div\_du\_detaillant[m]*huile[m]*100 / huile\_par\_region[r] <= 65;\\
+
+/* Le nombre de détaillants de chaque catégorie */\\
+subject to rapport\_categorie\_min \{c in CATEGORIES\} :\\
+	sum \{m in DETAILLANTS : categorie[m]=c\}\\
+	div\_du\_detaillant[m]*100 / nb\_par\_categorie[c] >= 55;\\
+
+subject to rapport\_categorie\_max \{c in CATEGORIES\} :\\
+	sum \{m in DETAILLANTS : categorie[m]=c\}\\
+	div\_du\_detaillant[m]*100 / nb\_par\_categorie[c] <= 65;\\
+
+\end{document}

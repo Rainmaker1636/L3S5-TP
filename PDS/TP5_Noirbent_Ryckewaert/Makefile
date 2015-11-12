@@ -14,7 +14,7 @@ CFLAGS += -g
 LDFLAGS  = -g
 
 ## Première cible
-all: multif race
+all: multif race observation
 
 
 ## Compilation séparée
@@ -31,13 +31,16 @@ multif:multif.o
 race:race.o
 	${CC} ${LDFLAGS} -o $@ $^
 
+observation:observation.o
+	${CC} ${LDFLAGS} -o $@ $^
+
 ## Liste des pseudo-cibles
 #  Ces cibles ne correspondent pas à des fichiers que l'on veut créer,
 #  juste à des séquences que l'on veut pouvoir déclencher
-.PHONY: all clean multif race
+.PHONY: all clean multif race observation
 
 clean:
 	rm -f *.o
 	rm -f *~
-	rm -f multif race
+	rm -f multif race observation
 

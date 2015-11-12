@@ -29,8 +29,9 @@
 fd\[2] -> ici 0 = lecture, 1 = écriture
 
 ###fork
+Exemple pour observer le fonctionnement du pipe
 
-###?
+###entrelacs
 Envoie de messages plus petit/grand que pipe_buf pour observer l'écriture atomique
 
 ###nonbloc
