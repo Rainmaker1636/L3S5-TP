@@ -33,4 +33,4 @@ Part2:Part2.c graphe.c
 .PHONY: all clean
 
 clean:
-	rm -f *.o *~ testAnalyseur Part2 *.ps
+	rm -f *.o *~ testAnalyseur
