@@ -25,8 +25,6 @@ class AutomatonStateSet extends ArrayList<State> {
 		return byName;
 	}
 
-	
-
 	public Automaton getAutomaton() {
 		return automaton;
 	}

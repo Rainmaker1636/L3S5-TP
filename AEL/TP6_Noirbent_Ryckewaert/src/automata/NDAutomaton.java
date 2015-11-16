@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,13 +57,16 @@ public class NDAutomaton extends AbstractAutomaton implements Recognizer, Automa
 	}
 
 	public Set<State> getTransitionSet(Set<State> from, char letter) {
-		Set<State> s = delta.get(new Key(from, letter));
+		Set<State> s;
+		for(State state : from){
+			s.addAll(delta.get(new Key(state, letter));
+		}
 		if (s == null)
 			return Collections.emptySet();
-		else
+		else	
 			return Collections.unmodifiableSet(s);
 	}
-	
+
 	@Override
 	public Set<State> getInitialStates() {
 		return Collections.unmodifiableSet(this.initialStates);
@@ -94,8 +98,21 @@ public class NDAutomaton extends AbstractAutomaton implements Recognizer, Automa
 
 	@Override
 	public boolean accept(String word) {
-		// TODO : implémenter correctement la méthode accept
-		return false;
+		return this.accept(word, this.getInitialStates());
+	}
+
+	public boolean accept(String word, Set<State> from) {
+		if (word.isEmpty()) {
+			for (State state : from) {
+				if (this.isAccepting(state))
+					return true;
+			}
+			return false;
+		} else {
+			Set<State> s;
+			s = getTransitionSet(from, word.charAt(0));
+			return accept(word.substring(1), s);
+		}
 	}
 
 	public Writer writeGraphvizTransitions(Writer buff) {
@@ -116,4 +133,70 @@ public class NDAutomaton extends AbstractAutomaton implements Recognizer, Automa
 		return buff;
 	}
 
+	/**
+	 * Returns true if the Set contains an accepting State
+	 * 
+	 * @param states
+	 *            the states to check
+	 * @return true if the Set contains an accepting State
+	 */
+	public boolean isAccepting(Set<State> states) {
+		for (State s : states) {
+			if (this.isAccepting(s))
+				return true;
+		}
+		return false;
+	}
+
+	public String getName(Set<State> states) {
+		String result;
+		result = "|";
+		for (State s : states)
+			result += s.getName() + "|";
+		return result;
+	}
+
+	/**
+	 * Create a deterministic automaton corresponding to the current automaton
+	 * 
+	 * @return a deterministic Automaton
+	 */
+	public NDAutomaton deterministic() {
+		NDAutomaton auto = new NDAutomaton();
+		State state = auto.addNewState(this.getName(this.getInitialStates()));
+		auto.setInitial(state);
+		Map<Set<State>, State> correspondances = new HashMap<Set<State>, State>();
+		correspondances.put(this.getInitialStates(), state);
+		this.createDeterministic(correspondances, auto, this.getInitialStates());
+		return auto;
+	}
+
+	/**
+	 * Create a deterministic automaton
+	 * 
+	 * @param correspondances
+	 *            what does each Set of State correspond to
+	 * @param auto
+	 *            l'automaton we want to create
+	 * @param states
+	 *            state in which we currently are
+	 */
+	public void createDeterministic(Map<Set<State>, State> correspondances, NDAutomaton auto, Set<State> states) {
+		for (Character c : this.usedAlphabet()) {
+			Set<State> setTo = this.getTransitionSet(states, c);
+			State from = correspondances.get(states);
+			State stateTo;
+			if (correspondances.containsKey(setTo)) {
+				stateTo = correspondances.get(setTo);
+				auto.addTransition(from, c, stateTo);
+			} else {
+				stateTo = auto.addNewState(this.getName(states));
+				if (this.isAccepting(setTo))
+					auto.setAccepting(stateTo);
+				correspondances.put(setTo, stateTo);
+				auto.addTransition(from, c, stateTo);
+				createDeterministic(correspondances, auto, setTo);
+			}
+		}
+	}
 }

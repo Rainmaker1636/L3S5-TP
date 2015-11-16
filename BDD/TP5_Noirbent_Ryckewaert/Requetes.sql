@@ -8,7 +8,7 @@ AS select employes.*,avions.* FROM employes NATURAL JOIN certifications NATURAL 
 ----------------------------------------
 
 --1)
-select eid as Pilote1,max(portee) as Portée from pilote p
+select eid as Pilote,max(portee) as Portée from pilote p
 group by eid
 HAVING count(*) >= 2;
 
@@ -20,7 +20,7 @@ select min(prix) as prix2 from vols
 where dep='CDG' and arr='NOU'
 group by dep,arr;
 
-select enom as Nom2 from pilote, volCheapCdgNou
+select enom as Nom from pilote, volCheapCdgNou
 where salaire < prix2;
 
 drop view if exists volCheapCdgNou;
@@ -28,15 +28,6 @@ drop view if exists volCheapCdgNou;
 --3)
 drop view if exists porteeMaxPilote;
 
-<<<<<<< HEAD
-create view minPorteedePilotedePleindeuro as
-select min(portee) as portee from pilote
-group by eid,salaire
-having  salaire > 100000;
-
-select dep,arr,distance from vols
-where distance <= ALL (select portee FROM minPorteedePilotedePleindeuro);
-=======
 create view porteeMaxPilote as
 select max(portee) as portee from pilote
 where salaire > 100000
@@ -45,7 +36,6 @@ group by eid;
 select dep,arr,distance from vols
 where distance <= ALL
 (select portee from PorteeMaxPilote);
->>>>>>> 68aa38f1e169cbe67f07d313479a4fe59a91ee26
 
 drop view if exists porteeMaxPilote;
 
