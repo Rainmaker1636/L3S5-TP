@@ -1,0 +1,21 @@
+// On dessine un carré
+PAS 30
+aller 160 160
+baisser
+EST 10 fois
+SUD 10 fois
+OUEST 10 fois
+NORD 10 fois
+
+// On dessine le toit
+NORDE 5 fois
+SUDE 5 fois
+
+lever
+SUD 10 fois
+OUEST
+
+baisser
+NORD 3 fois
+OUEST 2 fois
+SUD 3 fois

@@ -1,0 +1,167 @@
+ Précédent Table des matières Suivant
+2  Implantation d’un gestionnaire de travaux
+
+Exercice 2 (Structures de données pour les jobs et fonctions associées)   La gestion des différents jobs nécessite de maintenir des informations sur chaque job. Un job est identifié par son pid ou bien son job id, ces numéros lui sont attribués à son lancement. Ainsi, par exemple, le job xeyes de la session shell montrée précédemment a pour pid 503 et pour job id 2. De plus, à tout moment, on a besoin de savoir si le job est exécuté en arrière-plan (BG), en avant-plan (FG) ou s’il est stoppé (ST).
+
+Proposez des structures de données pour représenter toutes ces informations. De plus, proposez un ensemble de fonctions permettant de manipuler ces structures.
+Traitants de signal
+
+Il est nécessaire de rediriger les signaux SIGINT, SIGTSTP et SIGCHLD envoyés au mini-shell par le système. Un signal SIGINT est envoyé à chaque fois que l’utilisateur fait un Ctrl+C au clavier. Un signal SIGTSTP est envoyé lors d’un Ctrl+Z. Enfin le signal SIGCHLD est envoyé à chaque fois que l’exécution d’un programme lancé dans le mini-shell a terminé ou a été bloquée.
+
+Exercice 3   Il est nécessaire d’installer des traitants de signal pour personnaliser le traitement des signaux SIGINT, SIGTSTP et SIGCHLD. Donnez l’implémentation de la fonction sigaction_wrapper()
+
+    typedef void handler_t(int);
+    int sigaction_wrapper(int signum, handler_t *handler);
+
+qui permet d’associer un traitant à un signal donné.
+
+Exercice 4   Donnez l’implémentation du traitant de signal pour SIGINT :
+
+    void sigint_handler(int sig);
+
+Ce traitant redirige le signal vers le processus qui est en avant-plan afin de provoquer sa terminaison.
+
+Exercice 5   Donnez l’implémentation du traitant de signal pour SIGTSTP :
+
+    void sigstp_handler(int sig);
+
+Ce traitant redirige le signal vers le processus qui est en avant-plan afin de le suspendre.
+
+Exercice 6   Donnez l’implémentation du traitant de signal pour SIGCHLD :
+
+    void sigchld_handler(int sig);
+
+Ce traitant recherche tous les jobs terminés ou stoppés. Il détermine si le job a été stoppé, terminé par un signal ou a terminé normalement son exécution. Selon les cas, les structures de données sont mises à jour de façon appropriée et un message est affiché sur la sortie standard pour renseigner sur l’état du job.
+Organisation du code du gestionnaire de travaux
+
+Les fichiers sources d’un squelette de l’implantation d’un gestionnaire de travaux sont disponibles sur le portail.
+
+Vous y trouverez :
+
+    un Makefile ;
+    mshell.c : contient entre autres le main() ;
+    cmd.c, cmd.h : contient les commandes fg, bg, stop...
+    jobs.c, jobs.h : contient la bibliothèque gérant les structures de données associées aux jobs ;
+    sighandlers.c, sighandlers.h : contient les traitants de signaux ;
+    common.c, common.h : contient des données et fonctions communes aux différents fichiers. 
+
+A priori, vous n’avez à modifier que les fichiers cmd.c et sighandlers.c. Les squelettes des fonctions à implémenter sont déjà donnés ; aucune autre fonction n’est nécessaire.
+
+
+Le mini-shell peut fonctionner en mode verbose (mshell -v) ce qui permet d’avoir des informations sur les traitants et fonctions sollicités, etc. Une variable globale verbose est prévue à cet effet. Pensez à l’utiliser ! Le fichier jobs.c contient un exemple de son utilisation, à vous de voir selon les situations quelles informations afficher.
+Comment tester les traitants de signal ?
+
+Pour tester les premières fonctionnalités du mini-shell, il est proposé ci-dessous quelques idées.
+
+Pour réaliser ces tests il est nécessaire que la fonction waitfg soit implémentée. Il est mieux aussi que dans la fonction sigchld_handler il y ait impression à l’écran de messages explicites en mode verbeux afin de bien comprendre ce qui se passe.
+
+Lancer le mini-shell en mode verbeux puis:
+
+    lancer xclock (en avant-plan), le tuer avec Ctrl-C, observer la trace qui doit passer par les fonctions sigint_handler puis sigchld_handler;
+    lancer xclock -update 1 (en avant-plan), l’interrompre avec Ctrl-Z, observer la trace qui doit passer par les fonctions sigstp_handler et sigchld_handler. Dans un autre terminal, envoyer le signal SIGKILL avec la commande kill sur le processus correspondant à xclock, observer la trace qui doit passer par la fonction sigchld_handler;
+    lancer xclock -update 1 puis avec la commande kill dans un autre terminal envoyer le signal SIGTSTP puis SIGCONT sur le processus correspondant à xclock, observer le comportement de xclock et la trace qui doit passer par sigchld_handler. Combien de fois passe-t-on par ce gestionnaire de signal ? Pourquoi ? Pourquoi ne passe-t-on pas par sigstp_handler ?
+    créer un petit programme qui dure 10 secondes et s’arrête grâce à exit, observer le comportement. 
+
+Commandes du mini-shell
+
+Le mini-shell offre un certain nombre de commandes :
+
+    exit permet de quitter le mini-shell
+    stop permet d’arrêter un job
+    kill permet de provoquer la terminaison d’un job
+    bg envoie un job en arrière-plan
+    fg met un job en avant-plan
+    jobs donne des informations sur les jobs courants 
+
+
+Exercice 7   La commande fg est invoquée soit par fg pid soit par fg jid.
+
+Le prototype de la fonction implémentant la commande fg est le suivant :
+
+    void do_fg(char **argv);
+
+argv contient la chaîne de caractères correspondant à la commande tapée dans le mini-shell, comme par exemple "fg %1". Une fonction treat_argv() est mise à votre disposition pour chercher un job dans la liste des travaux en fonction d’un pid ou d’un jid. Son prototype est :
+
+    struct job_t * treat_argv(char **argv);
+
+La valeur NULL est retournée si aucun job n’a été trouvé.
+
+
+Lorsqu’un job est exécuté en avant-plan, l’utilisateur n’a pas la main. Pour pouvoir implémenter ce comportement, écrivez une fonction
+
+    void waitfg(pid_t pid)
+
+qui bloque tant que le job pid n’est pas mis en arrière-plan ou terminé.
+
+La fonction do_fg() envoie le signal approprié au job qui doit être passé en avant-plan, met à jour les informations associées au job et bloque tant que le job n’est pas passé en arrière-plan. Donnez son implémentation.
+
+Les commandes bg, stop et kill sont invoquées sur le même modèle que fg et sont respectivement implémentées par :
+
+    void do_bg(char **argv);
+    void do_stop(char **argv);
+    void do_kill(char **argv);
+
+Donnez leurs implémentations.
+
+Exercice 8   La commande exit permet de sortir du mini-shell. Le prototype de la fonction qui implémente exit est le suivant :
+
+    void do_exit();
+
+Inspirez-vous du comportement du shell que vous utilisez habituellement (cette remarque est d’ailleurs aussi valable pour toutes les autres commandes). Par exemple, que se passe-t-il lorsque vous faites un exit dans un shell alors qu’un job de ce shell est arrêté ?
+
+Exercice 9   La commande jobs affiche l’état de tous les jobs lancés dans le mini-shell, voyez l’exemple donné en début de document.
+
+La fonction qui implémente cette commande a pour prototype :
+
+    void do_jobs();
+
+Implémentez cette fonction.
+Précédent Table des matières Suivant 
+
+ Précédent Table des matières
+3  Travaux communicants par tubes
+
+Il s’agit d’ajouter la possibilité de traiter dans notre gestionnaire d’enchaînements de travaux dont les entrées/sorties standard sont redirigées vers/depuis des tubes anonymes.
+
+On pourra ainsi traiter des commandes telles
+
+    % ls -1 | wc -l
+    34
+
+
+Exercice 10 (Connexion de deux commandes par un tube anonyme)   Il s’agit d’implanter une commande
+
+    pipe command1 to command2
+
+qui exécute les commandes command1 et command2 en redirigeant la sortie standard de la première commande vers un tube anonyme depuis lequel sera redirigée l’entrée standard de la seconde commande.
+
+Exercice 11 (Des tubes dans le gestionnaire de travaux)  
+Question 1 (Un tube, deux commandes)   Modifiez le gestionnaire de travaux pour prendre en compte la possibilité de lancer des commandes selon les deux syntaxes suivantes
+
+    % commande1 | commande2
+
+et
+
+    % commande1 | commande2 &
+
+une telle commande ne crée qu’un unique travail, composé de deux processus.
+
+Attention : contrairement au cas de base, le canevas de code ne gère pas l’ajout du nouveau travail aux structures de données jobs.
+Question 2 (Des tubes et des commandes)   Étendez votre implantation précédente pour autoriser l’enchaînement de multiples commandes.
+
+Pour un ligne de commande
+
+    % commande1 | commande2 | ... | commanden
+
+il s’agit d’itérer n-1 fois le traitement suivant :
+
+    créer un tube qui va relier la commande i à la commande i+1
+    créer un fils qui
+        duplique son descripteur d’accès en écriture sur le tube vers sa sortie standard,
+        duplique son descripteur d’accès en lecture sur le tube créé à l’itération précédente vers son entrée standard,
+        ferme tous les morceaux de tubes inutilisés,
+        exécute la commande commandi et termine ; 
+    le père ferme les morceaux de tube inutiles (partie en écriture sur le tube qui vient d’être créé, partie en lecture sur le tube de l’itération précédente) et poursuit la boucle, 
+
+puis de créer un dernier fils pour exécuter la commande commandn.
+Précédent Table des matières 
