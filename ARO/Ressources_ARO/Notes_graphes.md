@@ -21,7 +21,7 @@ Notion de visiteur : lancement d'une fonction lors d'un événement particulier
 Utiliser la composante conexe pour éviter de retester les sommets bleus
 
 
-#Chemin de valeur minimal
+##Chemin de valeur minimal
 (P74, 4.6)
 chemin de valeurs minimal : noté pi (grec)
 
@@ -37,4 +37,27 @@ algo glouton : raisonne localement, sans remise en cause -> choix dans la meille
 /!\ complexité 
 - recherche sommet vert, recherche minimum -> tas binaire
 risque de n², mais possible O(m log n)
+
+##Rappels sur les tas binaires
+Voir cours ASD L2 (Tri)
+
+##Ordonancement de tâches
+Méthode MPM
+graphe sans cycle -> arc avec valeur, tache virtuelle de début et de fin
+système de dépendances
+calcule de la date minimum de début
+
+##Flot de valeur maximal
+- Tout doit être accessible depuis la source
+- Tout doit avoir acces à la destination
+
+3 axiomes :
+- Contrainte de capacité (ne dépasse pas la capacité max de l'arc)
+- f(v,w) = -f(w,v) (ce qui viens d'un sommet est ce qui en est sorti)
+- Conservation des flux (pas d'accumulation dans un sommet, ses entrées = ses sorties)
+
+arc direct : dans le sens de la flèche
+chemin améliorant : chemin de source vers destination non saturé
+chaine améliorante : chaine élémentaire de chemin directs ou indirects
+
 
