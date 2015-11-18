@@ -66,23 +66,63 @@ struct job_t *treat_argv(char **argv) {
 
 /* do_bg - Execute the builtin bg command */
 void do_bg(char **argv) {
-    printf("do_bg : To be implemented\n");
-
-    return;
+  struct job_t *jobp = NULL;
+  sigemptymask(&mask);
+  sigaddset(&mask,SIGCHLD);
+  sigaddset(&mask,SIGSTD);
+  sigaddset(&mask,SIGINT);
+  sigprocmask(SIGBLOCK,&mask,NULL);
+  if ((jobp=treat_argv(argv)) != NULL){
+    if (kill(-(jobp->pid),SIGCONT)<0)
+      unix_error("Kill error");
+    jobp->state=BG;
+    pid=jobp->pid;
+    sigprocmask(SIGUNBLOCK,&mask,NULL);
+  }
+  else{
+    perror("Aucun argument n'est donné");
+    exit(EXIT_FAILURE);
+  }
+  return;
 }
 
 /* waitfg - Block until process pid is no longer the foreground process */
 void waitfg(pid_t pid) {
-    printf("waitfg : To be implemented\n");
-
-    return;
+  struct job_t *j =jobs_getjobpid(pid);
+  if (!j){
+    perror("waitfg : le pid ne correspond à aucun job.");
+    exit(EXIT_FAILURE);
+  }
+  if (verbose){
+    printf("waitfg : Blocked until process %d is no longer in foreground.\n",pid);
+  }
+  while (j->jb_state==FG){
+    sleep(1);
+  }
+  return;
 }
 
 /* do_fg - Execute the builtin fg command */
 void do_fg(char **argv) {
-    printf("do_fg : To be implemented\n");
-
-    return;
+  struct job_t *jobp = NULL;
+  sigemptymask(&mask);
+  sigaddset(&mask,SIGCHLD);
+  sigaddset(&mask,SIGSTD);
+  sigaddset(&mask,SIGINT);
+  sigprocmask(SIGBLOCK,&mask,NULL);
+  if ((jobp=treat_argv(argv)) != NULL){
+    if (kill(-(jobp->pid),SIGCONT)<0)
+      unix_error("Kill error");
+    jobp->state=FG;
+    pid=jobp->pid;
+    sigprocmask(SIGUNBLOCK,&mask,NULL);
+    waitfg(jobp->pid);
+  }
+  else{
+    perror("Aucun argument n'est donné");
+    exit(EXIT_FAILURE);
+  }
+  return;
 }
 
 /* do_stop - Execute the builtin stop command */
