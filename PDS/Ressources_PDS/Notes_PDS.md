@@ -5,12 +5,22 @@ ulimit -c unlimited : fichier core de taille non borné
 bactrace : affiche l'état de la pile au moment de l'erreur
 -> associées ses commandes permettent de retrouver la ligne ayant provoquée une erreur de segmentation
 voir aussi outil ddb
+-----------
+pointeurs : 2 cas
+- écriture d'un résultat à un endroit
+- pzrtzge d'une variable
 
 ##Commande
+ps : récupération des pid des processus en cours
+
 time : temps d'execution des commandes
 temps dans le noyau, temps dans le code et temps total (/!\ multi-core)
 
 strace (option -fork) : trace les appels systèmes
+
+proc/pid/maps -> map de la mémoire
+sed : remplacement
+cut : découpage
 
 ##Descripteur de fichiers
 
@@ -71,6 +81,8 @@ shell : commande1 | commande2
 	
 dup() : remplacement d'un file descripteur par un auutre (sortie standard par tube par exemple) (man 2)
 
+appel systeme qui fait le fork : s'appelle clone
+
 ##Mémoire partagée
 mmap :
 
@@ -92,3 +104,33 @@ interblocage (ou deadblock)
 - option pour essayer de prendre pendant un certain temps
 - Versions récentes : possibilité de prendre plusieurs sémaphores en une fois
 
+##Threads
+posix : pthread
+(cwt : bibliothèque sympa sous caml)
+
+Problème fork :
+Interaction et calcul indépendant
+Recouvrement, fonctions bloquantes
+
+Processus léger, fil d'exécution
+id : numéro abstrait
+à l'origine étéient des processus
+
+pthread_create -> "crit l'id du thread créé dans son param
+pthread_self -> récupere son id
+
+fonction réentrantes -> ne doivent pas modifier de variable globales (à cause du partage de mémoire)
+retour des fonctions pthread contiennent leur code d'erreur (err_no étant globale)
+
+pas de hierarchie -> n'importe quel thread peut attendre les autres, peut exiter seul
+
+2 modes de gestion de la fin (pas de mode zombi mmais doit être fini) :
+- attente du join
+- detach (ne permet pas de passer outre un return)
+
+mutex sémaphore à 1 jeton, propriétaire du verrou
+
+futex : fast appel systeme sur un mutex
+verrou récursif : proriétaire + nombre de prise en main, mal normalisé
+
+appel systeme qui fait le fork : s'appelle clone, différence avec fork par des options

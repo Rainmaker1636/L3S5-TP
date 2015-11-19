@@ -61,3 +61,24 @@ Implémentation du problème producteur / consomateur
 
 ###philo
 Implémentation du probllème des philosophes
+
+##09
+###th-1
+exemple de mauvaise utilisation
+
+###th-maps
+Lancement d'un thread avec affichage de la map -> apparition d'une deuxième pile
+1er thread a spid identique au pid
+les threads sont dans le même espace mémoire
+
+###th-2
+return : tue le processus "lourd", tuant tout ses processus légers
+-> join
+pas de synchronisation -> imprévisibilité de l'ordonnanceur
+
+
+###th-maps-errno
+bidouille -> préprocesseur remplace l'adresse de errno par une fonction qui retourne l'adresse du errno dans ce thread -> pas vraiment globale
+
+###compteur-incr
+mutex

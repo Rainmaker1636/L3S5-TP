@@ -44,12 +44,12 @@ alias gex='export https_proxy="cache-etu.univ-lille1.fr:3128"'
 alias gexdis='export https_proxy=""'
 
 #Git
-alias ga='git add'
-alias gco='git commit -m'
-alias gll='git pull'
-alias gsh='git push'
-alias gst='git status'
-alias gck='git checkout'
+alias gia='git add'
+alias gico='git commit -m'
+alias gill='git pull'
+alias gish='git push'
+alias gist='git status'
+alias gick='git checkout'
 
 #Varible environnement
 export EDITOR=gedit
