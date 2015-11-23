@@ -1,0 +1,18 @@
+% ELFE - programmation logique et fonctionelle, evidemment!
+% Licence 3 informatique, universite Lille 1
+% auteurs: C. Bouillaguet et C. Kuttler
+% les princesses et les tigres (1/4)
+
+contenu(tigre).
+contenu(princesse).
+
+affiche_1(X,Y) :- X=princesse, Y=tigre.
+
+affiche_2(X,Y) :- X=tigre, Y=princesse.
+affiche_2(X,Y) :- X=princesse, Y=tigre.
+
+
+solutions(X,Y):- contenu(X),contenu(Y), affiche_1(X,Y),not(affiche_2(X,Y)).
+
+alt_solution(X,Y) :- contenu(X),contenu(Y),
+			  not(affiche_1(X,Y)), affiche_2(X,Y).

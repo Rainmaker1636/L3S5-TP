@@ -5,8 +5,14 @@ e(f,g).
 e(e,g).
 e(d,e).
 e(d,a).
+
+%Ajout de cycles
 e(c,d).
 e(g,f).
 
 p(X,Y) :- e(X,Y).
 p(X,Z) :- e(X,Y),p(Y,Z).
+
+paire(X,Z) :- e(X,Y),impaire(Y,Z).
+impaire(X,Z) :- e(X,Y),paire(Y,Z).
+impaire(X,Y) :- e(X,Y).
