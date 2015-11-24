@@ -6,9 +6,9 @@
 contenu(tigre).
 contenu(princesse).
 
-affiche_2(princesse,Y) :- contenu(Y).
 affiche_1(tigre,X):-contenu(X).
 affiche_1(X,princesse):- contenu(X).
+affiche_2(princesse,Y) :- contenu(Y).
 
 solutions(X,Y):- affiche_1(X,Y),affiche_2(X,Y).
 

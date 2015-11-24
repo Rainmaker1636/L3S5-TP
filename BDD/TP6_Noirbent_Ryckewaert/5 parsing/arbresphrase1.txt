@@ -1,0 +1,13 @@
+22)
+
+      S
+   /     \
+  NP       VP
+ /  \    /    \
+DET  N  V       NP
+ |   |  |      / \
+ |   |  |     DET  N
+ |   |  |      |   |
+the man sings  a  song
+
+

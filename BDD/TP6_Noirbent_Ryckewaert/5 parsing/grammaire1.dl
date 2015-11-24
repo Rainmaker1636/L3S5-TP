@@ -1,0 +1,4 @@
+
+np(X,Y) :- det(X), n(Y).
+vp(X,Y) :- v(X), np(Y).
+s(X,Y) :- np(X), vp(Y).
