@@ -1,20 +1,19 @@
 package automata;
 
-import java.util.*;
-
-import automata.AbstractAutomaton.Key;
+import java.util.HashMap;
 
 public class Daumaton extends NDAutomaton implements DeterministicAutomaton {
-	
-	protected HashMap<Key,State> delta;
+
+	protected HashMap<Key, State> delta;
+
 	/**
 	 * état initial de l'automate
 	 * 
 	 * @return état initial de l'automate
 	 */
-	public State getInitialState(){
+	public State getInitialState() {
 		State s = null;
-		for (State initialS : this.initialStates){
+		for (State initialS : this.initialStates) {
 			s = initialS;
 		}
 		return s;
@@ -29,8 +28,8 @@ public class Daumaton extends NDAutomaton implements DeterministicAutomaton {
 	 * @throws StateException
 	 *             si s est invalide
 	 */
-	public State getTransition(State from, char letter) throws StateException{
-	State s = delta.get(new Key(from, letter));
+	public State getTransition(State from, char letter) throws StateException {
+		State s = delta.get(new Key(from, letter));
 		if (s == null)
 			throw new StateException();
 		else
@@ -46,10 +45,10 @@ public class Daumaton extends NDAutomaton implements DeterministicAutomaton {
 	 * @return transition delta(s,letter), null si indéfinie
 	 * @throws StateException
 	 */
-	public State getTransition(String from, char letter) throws StateException{
+	public State getTransition(String from, char letter) throws StateException {
 		return getTransition(states.get(from), letter);
 	}
-		
+
 	/**
 	 * transition pour s,letter. null si indéfinie
 	 * 
@@ -59,10 +58,10 @@ public class Daumaton extends NDAutomaton implements DeterministicAutomaton {
 	 * @return transition delta(s,letter), null si indéfinie
 	 * @throws StateException
 	 */
-	public State getTransition(Integer id, char letter) throws StateException{
+	public State getTransition(Integer id, char letter) throws StateException {
 		return getTransition(states.get(id), letter);
 	}
-		
+
 	@Override
 	public void setInitial(automata.State s) {
 		this.initialStates.clear();
