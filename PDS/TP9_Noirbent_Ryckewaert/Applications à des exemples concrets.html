@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="generator" content="hevea 2.23">
+<link rel="stylesheet" type="text/css" href="Applications%20%C3%A0%20des%20exemples%20concrets_fichiers/feuille.css"><link rel="stylesheet" type="text/css" href="Applications%20%C3%A0%20des%20exemples%20concrets_fichiers/tdth-.css">
+<title>Applications à des exemples concrets</title>
+</head>
+<body>
+<a href="http://www.fil.univ-lille1.fr/%7Ehym/e/pds/tp/tdth-sync.html"><img src="Applications%20%C3%A0%20des%20exemples%20concrets_fichiers/previous.png" alt="Précédent"></a>
+<a href="http://www.fil.univ-lille1.fr/%7Ehym/e/pds/tp/tdth.html"><img src="Applications%20%C3%A0%20des%20exemples%20concrets_fichiers/contents.png" alt="Table des matières"></a>
+<hr>
+<h2 id="sec6" class="section">5&nbsp;&nbsp;Applications à des exemples concrets</h2>
+<p>L’objectif de cette section est de mettre en œuvre des threads sur
+quelques cas concrets.
+Vous trouverez sur le portail des canevas de code correspondant à ces
+exercices.</p><div class="theorem"><span style="font-weight:bold"><br>
+Exercice&nbsp;12</span>&nbsp;<span style="font-weight:bold">(Calcul du taux de GC)</span>&nbsp;&nbsp;<em>
+Étant donné un génome (c’est-à-dire un fichier contenant une liste
+de bases qui peuvent être A, C, G ou T), il est intéressant de
+calculer le taux d’apparition des bases G et C sur le nombre total
+de bases.</em><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;1</span></em><em>&nbsp;&nbsp;</em>
+Implémentez une commande prenant en argument le nom d’un
+fichier contenant un génome et un nombre&nbsp;<span style="font-style:italic">n</span> de threads telle
+que&nbsp;:
+<ul class="itemize"><li class="li-itemize">
+charge le contenu de ce fichier en mémoire,
+</li><li class="li-itemize">découpe le calcul du nombre de G et C en
+<span style="font-style:italic">n</span>&nbsp;threads, chacun traitant un <span style="font-style:italic">n</span>-ième du
+contenu du fichier,
+</li><li class="li-itemize">affiche le taux une fois tous les calculs terminés.
+</li></ul>
+</div><div class="theorem"><em><em><span style="font-weight:bold">Question&nbsp;2</span></em></em><em><em>&nbsp;&nbsp;</em></em>
+Expérimentez la commande précédente, en faisant varier la
+taille du génome à analyser et le nombre de threads pour
+trouver le nombre optimal de threads suivant la taille du
+génome.<p>Dans cet exercice, on supposera que le génome peut être placé
+entièrement en mémoire, pour éviter les conflits entre les
+threads dans l’accès aux entrées/sorties.
+</p></div></div><div class="encart"><h3 id="sec7" class="subsection">Code initial pour le calcul du taux de GC &amp; Expérimentation</h3>
+<p> 
+Vous trouverez sur le portail un code calculant séquentiellement
+le taux de G et C. Vous pourrez ainsi vous concentrer sur l’ajout
+des threads à ce code. Vous pourrez aussi vérifier le résultat de
+votre code multithreadé.</p><p>Par ailleurs, vous trouverez aussi un générateur de génome
+aléatoire qui vous permettra d’expérimenter sur des génomes de
+toutes les tailles (plus petites que la mémoire de votre machine,
+vu le modèle très simple de chargement du génome...).</p><p>Vous expérimenterez en lançant <span style="font-family:monospace">time ./compteur-gc</span> pour
+observer comment se passe le temps écoulé pendant le calcul.
+Vous pourrez aussi utiliser la commande
+<span style="font-family:monospace">/usr/bin/time -f %e ./compteur-gc</span>
+pour n’afficher que le temps réel écoulé.</p><p>Comprenez-vous comment ont été placés les appels à
+<span style="font-family:monospace">clock_gettime</span> dans le code initial&nbsp;?</p><p>Pour mener la campagne d’expériences, vous devez faire varier à la
+fois la taille <span style="font-style:italic">n</span> des génomes et le nombre <span style="font-style:italic">t</span> de threads (par
+exemple pour <span style="font-style:italic">n</span>=10<sup>2</sup> à 10<sup>9</sup> et <span style="font-style:italic">t</span>=2<sup>0</sup> à 2<sup>5</sup> cela donnera 48
+expérimentations). En principe, pour qu’une mesure de temps soit
+valable il faut, pour chaque expérience taille de génome/nombre de
+threads, réaliser la moyenne sur plusieurs tests.</p><p>Vous pourrez avantageusement utiliser Gnuplot pour représenter
+votre graphique en 3 dimensions. En admettant disposer d’un
+fichier <span style="font-family:monospace">res.dat</span> contenant sur chaque ligne la taille du
+génome, le nombre de threads et le temps (séparés par des
+espaces), vous pourrez avec les commandes
+suivantes obtenir une belle courbe.<br>
+<span style="font-family:monospace">gnuplot&gt; set logscale x<br>
+gnuplot&gt; set dgrid3d 30,30<br>
+gnuplot&gt; set pm3d<br>
+gnuplot&gt; splot ’res.dat’ using 1:2:3 with lines
+</span></p></div><div class="theorem"><span style="font-weight:bold"><br>
+Exercice&nbsp;13</span>&nbsp;<span style="font-weight:bold">(Tri rapide multithreadé)</span>&nbsp;&nbsp;<em>
+Le principe du tri rapide est bien connu</em><sup><a id="text1" href="http://www.fil.univ-lille1.fr/%7Ehym/e/pds/tp/tdth-006.html#note1"><em>1</em></a></sup><em>.
+Rappelons juste qu’à chaque étape la partie du tableau en cours de
+tri est découpée en deux sous-tableaux&nbsp;: les éléments inférieurs au
+pivot et ceux supérieurs au pivot.
+Les deux sous-tableaux sont ensuite eux-mêmes triés, de façon
+indépendante l’un de l’autre.
+Il est donc possible de charger deux threads différents d’effectuer
+le tri de chaque sous-tableau.</em><p><em>On peut aussi imaginer implémenter le tri rapide en remplaçant chaque appel
+récursif par la création d’un nouveau thread.
+Mais cette stratégie est très coûteuse en nombre de threads, donc en
+en temps (créer un thread prend du temps, etc.) et en mémoire.</em></p><p><em>Une stratégie plus efficace est d’utiliser une pile des tâches à
+faire, c’est-à-dire des sous-tableaux (que nous appellerons des
+</em><em><span style="font-style:italic">blocs</span></em><em>) du tableau à trier.
+Chaque thread répète alors les opérations suivantes&nbsp;:
+</em></p><ul class="itemize"><li class="li-itemize"><em>
+</em><em>dépiler un bloc,
+</em></li><li class="li-itemize"><em>découper ce bloc en deux sous-blocs (c’est-à-dire effectuer
+une étape de l’algorithme)
+</em></li><li class="li-itemize"><em>empiler les deux nouveaux blocs,
+</em></li></ul><p><em>
+jusqu’à ce que le tableau soit entièrement trié.</em></p><p><em>Comment un thread peut-il savoir que le tableau est entièrement trié&nbsp;?</em></p><p><em>Les threads doivent s’arrêter lorsqu’il n’y a plus de bloc à trier
+</em>et<em> qu’aucun autre thread n’est en train de découper un bloc.
+Nous utiliserons donc un compteur du nombre de threads qui sont en
+train de découper un bloc.</em></p><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;1</span></em><em>&nbsp;&nbsp;</em>
+Mettez en œuvre cet algorithme en&nbsp;:
+<ul class="itemize"><li class="li-itemize">
+créant une pile et <span style="font-style:italic">n</span>&nbsp;threads dans la fonction
+<span style="font-family:monospace">rapide</span>,
+</li><li class="li-itemize">créant une fonction adaptée à la signature attendue dans
+un thread qui effectue en boucle&nbsp;:
+<ul class="itemize"><li class="li-itemize">
+vérifie si le tri est terminé,
+</li><li class="li-itemize">dépile un bloc dès qu’un bloc est disponible,
+</li><li class="li-itemize">le découpe,
+</li><li class="li-itemize">empile les deux (ou moins) sous-blocs.
+</li></ul>
+</li></ul><p>Vous veillerez à ce que les accès aux structures de données
+partagées soient protégés par un ou plusieurs verrous et que les
+endormissements (quand la pile est vide au moment où un thread
+veut dépiler un bloc) et les réveils (quand de nouveaux blocs
+doivent être traités) soient gérés grâce à une ou plusieurs
+conditions.
+</p></div><p><em>Quand les blocs sont petits, les threads passent leur temps à se
+synchroniser pour dépiler et empiler des blocs dans la structure de
+données partagée.</em></p><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;2</span></em><em>&nbsp;&nbsp;</em>
+Modifiez votre implémentation pour que les blocs qui sont plus
+petits qu’une valeur seuil soient triés en utilisant l’algorithme
+séquentiel plutôt que l’algorithme multithreadé.<p>Mettez en place une série de tests pour mesurer la vitesse de
+votre algorithme en fonction de la taille choisie comme seuil et
+du nombre de threads utilisés.
+</p></div></div><div class="encart"><h3 id="sec8" class="subsection">Expérimentations du tri rapide</h3>
+<p> 
+Pour tester votre tri rapide, vous pourrez utiliser
+<span style="font-family:monospace">dd if=/dev/urandom of=/tmp/alea bs=1048576 count=128</span>
+qui permet de créer un fichier <span style="font-family:monospace">/tmp/alea</span> contenant 128Mo de
+données aléatoires.
+Vous choisirez des tailles de données assez grandes mais toujours
+plus petites (au maximum la moitié&nbsp;?) que la mémoire de votre
+machine.</p><p>Vous testerez aussi votre algorithme sur des données déjà triées.</p><p>Quel gain de performance arrivez-vous à obtenir par rapport à
+l’algorithme séquentiel&nbsp;?
+</p></div>
+<h3 id="sec9" class="subsection">Serveur de chat multithreadé</h3>
+<div class="encart"><h3 id="sec10" class="subsection">Squelette d’un serveur de chat multithreadé</h3>
+<p> 
+<a id="enc:mtcs-sqlt"></a>
+Les fichiers sources d’un squelette de serveur de chat multithreadé
+sont accessibles sur le portail.</p><p>Vous y trouverez :
+</p><ul class="itemize"><li class="li-itemize">
+un <span style="font-family:monospace">Makefile</span> ;
+</li><li class="li-itemize"><span style="font-family:monospace">mtcs.c</span>, point d’entrée du programme. Ouvre le port de
+connexion du serveur, écoute sur ce port et établit la connexion
+pour chaque nouveau client. Délègue à <span style="font-family:monospace">manage_cnct()</span> la
+création d’un thread en charge de la gestion de cette connexion
+;
+</li><li class="li-itemize"><span style="font-family:monospace">cnct.c</span> et <span style="font-family:monospace">cnct.h</span>, gestion de la connexion d’un
+client ;
+</li><li class="li-itemize"><span style="font-family:monospace">tools.c</span> et <span style="font-family:monospace">tools.h</span>, outils divers ;
+</li><li class="li-itemize"><span style="font-family:monospace">config.h</span>, configuration du serveur.
+</li></ul><p>
+La version fournie de la fonction <span style="font-family:monospace">manage_cnct()</span> n’est pas
+multithreadée ; la connexion d’un client bloque le serveur...
+</p><p>
+Seul le fichier <span style="font-family:monospace">cnct.c</span> est à modifier. Vous fournirez aussi
+des fichiers <span style="font-family:monospace">stat.h</span> et <span style="font-family:monospace">stat.c</span> pour la gestion des
+statistiques.
+</p><p>
+Il est possible d’activer la production de traces d’exécution du
+serveur par l’option <span style="font-family:monospace">-v</span>. Utilisez les fonctions
+<span style="font-family:monospace">pgrs*()</span> pour ce faire.
+</p></div><div class="encart"><h3 id="sec11" class="subsection">Utilisation du serveur de chat multithreadé</h3>
+<p> 
+<a id="enc:mtcs-usage"></a>
+Au démarrage du serveur, le numéro du port d’écoute est affiché :
+</p><blockquote class="quote">
+<pre class="verbatim">% ./mtcs
+Server open on port 8012
+...
+</pre>
+</blockquote><p>
+il faut repérer ce numéro de port d’écoute (ici 8012), il faut aussi
+identifier aussi le nom de la machine ! (<span style="font-family:monospace">localhost</span> pour la
+machine locale peut suffire).
+</p><p>
+On peut alors lancer des clients. Depuis un autre terminal :
+</p><blockquote class="quote">
+<pre class="verbatim">% telnet localhost 8012
+Trying 127.0.0.1...
+Connected to localhost.
+Escape character is '^]'.
+mtcs : bienvenu
+foooooooooooooooo
+foooooooooooooooo
+FOOOOOOOOOOOOOOOOooooooooooooooooooooooooooooooo.............
+FOOOOOOOOOOOOOOOOooooooooooooooooooooooooooooooo.............
+</pre>
+</blockquote><p>
+on termine par <span style="font-family:monospace">control-]</span> puis <span style="font-family:monospace">quit</span>:
+</p><blockquote class="quote">
+<pre class="verbatim">^]
+telnet&gt; quit
+Connection closed.
+</pre>
+</blockquote></div><div class="theorem"><span style="font-weight:bold"><br>
+Exercice&nbsp;14</span>&nbsp;<span style="font-weight:bold">(Serveur de chat)</span>&nbsp;&nbsp;<em>
+</em><a id="mtcs"></a><em>
+Un serveur de chat multithreadé est basé sur le principe suivant :
+</em><ul class="itemize"><li class="li-itemize"><em>
+</em><em>un thread maître assure l’écoute sur une socket de
+connexion ;
+</em></li><li class="li-itemize"><em>à chaque nouvelle demande de connexion, il crée une socket
+pour interagir avec le client et délègue cette interaction à
+un thread par un appel à la fonction
+</em><blockquote class="quote"><em>
+</em><pre class="verbatim"><em>int manage_cnct(int fd);
+</em></pre></blockquote><em>
+</em></li><li class="li-itemize"><em>cette fonction est en charge de créer un thread et
+d’enregistrer le descripteur </em><em><span style="font-family:monospace">fd</span></em><em> comme celui d’un
+nouveau client ;
+</em></li><li class="li-itemize"><em>ce thread devra lire en boucle sur la socket puis répéter
+sur l’ensemble des sockets des autres clients.
+</em></li></ul><em>
+Dans une version initiale non multithreadée, l’implémentation de
+</em><em><span style="font-family:monospace">manage_cnct()</span></em><em> repose sur un simple appel
+à </em><em><span style="font-family:monospace">repeater()</span></em><em>.
+</em><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;1</span></em><em>&nbsp;&nbsp;</em>
+Donnez une implantation de la fonction
+<span style="font-family:monospace">manage_cnct()</span> déléguant à un thread l’appel à la
+fonction.<p>On se préoccupera aussi de la terminaison de ce
+thread.
+
+</p></div><em>
+</em><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;2</span></em><em>&nbsp;&nbsp;</em>
+Quelle structure de données doit être partagée entre les
+threads pour réaliser cette répétition des flux d’entrée ?
+Identifiez les accès qui seront réalisés à cette structure de
+données. Comment les protéger ?
+</div><p><em>On désire ajouter le maintien de statistiques au serveur de
+chat. Les informations suivantes seront mémorisées :
+</em></p><ul class="itemize"><li class="li-itemize"><em>
+</em><em>nombre de clients ;
+</em></li><li class="li-itemize"><em>nombre de lignes reçues ;
+</em></li><li class="li-itemize"><em>nombre de lignes envoyées ;
+</em></li><li class="li-itemize"><em>nombre maximal de client à un instant donné ;
+</em></li><li class="li-itemize"><em>nombre maximal de lignes reçues d’un client ;
+</em></li><li class="li-itemize"><em>nombre maximal de lignes envoyées à un client.
+</em></li></ul><p><em>
+De plus, on désire pouvoir interroger le serveur sur ces
+statistiques en lui envoyant un signal </em><em><span style="font-family:monospace">SIGUSR1</span></em><em>.</em></p><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;3</span></em><em>&nbsp;&nbsp;</em>
+Comment garder et mettre à jour ces informations de
+statistiques ?
+</div><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;4</span></em><em>&nbsp;&nbsp;</em>
+Pourquoi est-il dangereux de contrôler par un verrou mutex
+POSIX l’accès partagé aux informations de statistiques entre
+les threads produisant ces statistiques et le handler de
+signaux affichant ces statistiques ?
+
+</div><div class="theorem"><em><span style="font-weight:bold">Question&nbsp;5</span></em><em>&nbsp;&nbsp;</em>
+Implantez cette prise de statistiques et leur
+affichage.
+</div></div><hr>
+<a href="http://www.fil.univ-lille1.fr/%7Ehym/e/pds/tp/tdth-sync.html"><img src="Applications%20%C3%A0%20des%20exemples%20concrets_fichiers/previous.png" alt="Précédent"></a>
+<a href="http://www.fil.univ-lille1.fr/%7Ehym/e/pds/tp/tdth.html"><img src="Applications%20%C3%A0%20des%20exemples%20concrets_fichiers/contents.png" alt="Table des matières"></a>
+
+
+</body></html>

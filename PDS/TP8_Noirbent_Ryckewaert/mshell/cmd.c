@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "jobs.h"
+#include "sighandlers.h"
 
 #define BOLD "\033[00;01m"
 #define NORM "\033[00;00m"
@@ -81,7 +82,7 @@ void do_bg(char **argv) {
   }
   else{
     perror("Aucun argument n'est donné");
-    exit(EXIT_FAILURE);
+    do_help();
   }
   return;
 }
@@ -120,35 +121,66 @@ void do_fg(char **argv) {
   }
   else{
     perror("Aucun argument n'est donné");
-    exit(EXIT_FAILURE);
+    do_help();
   }
   return;
 }
 
 /* do_stop - Execute the builtin stop command */
 void do_stop(char **argv) {
-    printf("do_stop : To be implemented\n");
-
+  struct job_t *jobp = NULL;
+  sigemptymask(&mask);
+  sigaddset(&mask,SIGCHLD);
+  sigaddset(&mask,SIGSTD);
+  sigaddset(&mask,SIGINT);
+  sigprocmask(SIGBLOCK,&mask,NULL);
+  if ((jobp=treat_argv(argv)) != NULL){
+    if (kill(-(jobp->pid),SIGTSTD)<0)
+      unix_error("Kill error");
+    sigchld_handler(SIGTSTD); /* Appel au handler pour mettre à jour l'état du processus si il s'est arreté */
+    sigprocmask(SIGUNBLOCK,&mask,NULL);
+  }
+  else{
+    perror("Aucun argument n'est donné");
+    do_help();
+  }
     return;
 }
 
 /* do_kill - Execute the builtin kill command */
 void do_kill(char **argv) {
-    printf("do_kill : To be implemented\n");
-
+  struct job_t *jobp = NULL;
+  sigemptymask(&mask);
+  sigaddset(&mask,SIGCHLD);
+  sigaddset(&mask,SIGSTD);
+  sigaddset(&mask,SIGINT);
+  sigprocmask(SIGBLOCK,&mask,NULL);
+  if ((jobp=treat_argv(argv)) != NULL){
+    if (kill(-(jobp->pid),SIGINT)<0)
+      unix_error("Kill error");
+    sigchld_handler(SIGTSTD);
+    sigprocmask(SIGUNBLOCK,&mask,NULL);
+  }
+  else{
+    perror("Aucun argument n'est donné");
+    do_help();
+  }
     return;
 }
 
 /* do_exit - Execute the builtin exit command */
 void do_exit() {
-    printf("do_exit : To be implemented\n");
-
-    return;
+    int i;
+    for (i = 0; i < MAXJOBS; i++) {
+    	if (kill(i,SIGKILL))==0){ /* si un processus a été tué */
+    		jobs_deletejob(i);
+    	}
+    }
+    exit(EXIT_SUCCESS); /* fin mini shell */
 }
 
 /* do_jobs - Execute the builtin fg command */
 void do_jobs() {
-    printf("do_jobs : To be implemented\n");
-
+    jobs_listjobs()
     return;
 }
