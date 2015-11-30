@@ -6,8 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include "jobs.h"
+#include "sighandlers.h"
 
 #define BOLD "\033[00;01m"
 #define NORM "\033[00;00m"
@@ -34,54 +36,54 @@ void do_help() {
 
 /* treat_argv - Determine pid or jobid and return the associated job structure */
 struct job_t *treat_argv(char **argv) {
-    struct job_t *jobp = NULL;
+  struct job_t *jobp = NULL;
 
-    /* Ignore command if no argument */
-    if (argv[1] == NULL) {
-        printf("%s command requires PID or %%jobid argument\n", argv[0]);
-        return NULL;
+  /* Ignore command if no argument */
+  if (argv[1] == NULL) {
+    printf("%s command requires PID or %%jobid argument\n", argv[0]);
+    return NULL;
+  }
+
+  /* Parse the required PID or %JID arg */
+  if (isdigit((int) argv[1][0])) {
+    pid_t pid = atoi(argv[1]);
+    if (!(jobp = jobs_getjobpid(pid))) {
+      printf("(%d): No such process\n", (int) pid);
+      return NULL;
     }
-
-    /* Parse the required PID or %JID arg */
-    if (isdigit((int) argv[1][0])) {
-        pid_t pid = atoi(argv[1]);
-        if (!(jobp = jobs_getjobpid(pid))) {
-            printf("(%d): No such process\n", (int) pid);
-            return NULL;
-        }
-    } else if (argv[1][0] == '%') {
-        int jid = atoi(&argv[1][1]);
-        if (!(jobp = jobs_getjobjid(jid))) {
-            printf("%s: No such job\n", argv[1]);
-            return NULL;
-        }
-    } else {
-        printf("%s: argument must be a PID or %%jobid\n", argv[0]);
-        return NULL;
+  } else if (argv[1][0] == '%') {
+    int jid = atoi(&argv[1][1]);
+    if (!(jobp = jobs_getjobjid(jid))) {
+      printf("%s: No such job\n", argv[1]);
+      return NULL;
     }
+  } else {
+    printf("%s: argument must be a PID or %%jobid\n", argv[0]);
+    return NULL;
+  }
 
-    return jobp;
+  return jobp;
 }
 
 
 /* do_bg - Execute the builtin bg command */
 void do_bg(char **argv) {
+  sigset_t mask;
   struct job_t *jobp = NULL;
-  sigemptymask(&mask);
+  sigemptyset(&mask);
   sigaddset(&mask,SIGCHLD);
-  sigaddset(&mask,SIGSTD);
+  sigaddset(&mask,SIGSTOP);
   sigaddset(&mask,SIGINT);
-  sigprocmask(SIGBLOCK,&mask,NULL);
+  sigprocmask(SIG_BLOCK,&mask,NULL);
   if ((jobp=treat_argv(argv)) != NULL){
-    if (kill(-(jobp->pid),SIGCONT)<0)
+    if (kill(-(jobp->jb_pid),SIGCONT)<0)
       unix_error("Kill error");
-    jobp->state=BG;
-    pid=jobp->pid;
-    sigprocmask(SIGUNBLOCK,&mask,NULL);
+    jobp->jb_state=BG;
+    sigprocmask(SIG_UNBLOCK,&mask,NULL);
   }
   else{
     perror("Aucun argument n'est donné");
-    exit(EXIT_FAILURE);
+    do_help();
   }
   return;
 }
@@ -104,51 +106,84 @@ void waitfg(pid_t pid) {
 
 /* do_fg - Execute the builtin fg command */
 void do_fg(char **argv) {
+  sigset_t mask;
   struct job_t *jobp = NULL;
-  sigemptymask(&mask);
+  sigemptyset(&mask);
   sigaddset(&mask,SIGCHLD);
-  sigaddset(&mask,SIGSTD);
+  sigaddset(&mask,SIGSTOP);
   sigaddset(&mask,SIGINT);
-  sigprocmask(SIGBLOCK,&mask,NULL);
+  sigprocmask(SIG_BLOCK,&mask,NULL);
   if ((jobp=treat_argv(argv)) != NULL){
-    if (kill(-(jobp->pid),SIGCONT)<0)
+    if (kill(-(jobp->jb_pid),SIGCONT)<0)
       unix_error("Kill error");
-    jobp->state=FG;
-    pid=jobp->pid;
-    sigprocmask(SIGUNBLOCK,&mask,NULL);
-    waitfg(jobp->pid);
+    jobp->jb_state=FG;
+    /*sigprocmask(SIG_UNBLOCK,&mask,NULL);*/
+    waitfg(jobp->jb_pid);
   }
   else{
     perror("Aucun argument n'est donné");
-    exit(EXIT_FAILURE);
+    do_help();
   }
   return;
 }
 
 /* do_stop - Execute the builtin stop command */
 void do_stop(char **argv) {
-    printf("do_stop : To be implemented\n");
-
+  sigset_t mask;
+  struct job_t *jobp = NULL;
+  sigemptyset(&mask);
+  sigaddset(&mask,SIGCHLD);
+  sigaddset(&mask,SIGSTOP);
+  sigaddset(&mask,SIGINT);
+  sigprocmask(SIG_BLOCK,&mask,NULL); 
+  if ((jobp=treat_argv(argv)) != NULL){
+    if (kill(-(jobp->jb_pid),SIGSTOP)<0)
+      unix_error("Kill error");
+    sigchld_handler(SIGSTOP); /* Appel au handler pour mettre à jour l'état du processus si il s'est arreté */
+    sigprocmask(SIG_UNBLOCK,&mask,NULL);
+  }
+  else{
+    perror("Aucun argument n'est donné");
+    do_help();
+  }
     return;
 }
 
 /* do_kill - Execute the builtin kill command */
 void do_kill(char **argv) {
-    printf("do_kill : To be implemented\n");
-
-    return;
+  sigset_t mask;
+  struct job_t *jobp = NULL;
+  sigemptyset(&mask);
+  sigaddset(&mask,SIGCHLD);
+  sigaddset(&mask,SIGSTOP);
+  sigaddset(&mask,SIGINT);
+  sigprocmask(SIG_BLOCK,&mask,NULL);
+  if ((jobp=treat_argv(argv)) != NULL){
+    if (kill(-(jobp->jb_pid),SIGINT)<0)
+      unix_error("Kill error");
+    sigchld_handler(SIGSTOP);
+    sigprocmask(SIG_UNBLOCK,&mask,NULL);
+  }
+  else{
+    perror("Aucun argument n'est donné");
+    do_help();
+  }
+  return;
 }
 
 /* do_exit - Execute the builtin exit command */
 void do_exit() {
-    printf("do_exit : To be implemented\n");
-
-    return;
+  int i;
+  for (i = 0; i < MAXJOBS; i++) {
+    if ((kill(i,SIGKILL))==0){ /* si un processus a été tué */
+    		jobs_deletejob(i);
+    	}
+    }
+    exit(EXIT_SUCCESS); /* fin mini shell */
 }
 
 /* do_jobs - Execute the builtin fg command */
 void do_jobs() {
-    printf("do_jobs : To be implemented\n");
-
+  jobs_listjobs();
     return;
 }
