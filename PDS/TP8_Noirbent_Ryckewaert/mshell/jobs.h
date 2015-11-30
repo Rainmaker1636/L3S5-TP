@@ -6,6 +6,7 @@
 #include <sys/types.h>
 #include "common.h"
 
+#define MAXJOBS      16              /* max jobs at any point in time */
 enum jstate { UNDEF, BG, FG, ST };
 
 struct job_t {                  /* The job struct */
