@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Daumaton extends NDAutomaton implements DeterministicAutomaton {
 
 	protected HashMap<Key, State> delta;
-
+	
 	/**
 	 * état initial de l'automate
 	 * 
