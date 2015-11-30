@@ -5,7 +5,6 @@
 
 #include "jobs.h"
 
-#define MAXJOBS      16              /* max jobs at any point in time */
 static struct job_t jobs[MAXJOBS];   /* the job list                  */
 
 int nextjid = 1;                     /* next job ID to allocate       */

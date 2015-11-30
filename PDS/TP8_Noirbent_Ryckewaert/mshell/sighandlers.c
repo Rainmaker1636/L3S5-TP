@@ -36,50 +36,54 @@ void sigchld_handler(int sig) {
   pid_t child_pid;
   int child_jid;
   int status;
-  if (verbose)
-    printf("sigchld_handler: entering\n");
+struct job_t *j;
+
   /* Début implémentation */
 
-  if (verbose) printf("sigchild_handler entering");
-  while ((child_pid = waitpid(-1,&status,WNOHANG||WUNTRACED)))>0)
-  if (WIFSTOPPED(status)){
-    struct job_t *j=jobs_getjobpid(child_pid);
-    if (!j) {
-      perror("sigchld_handler : le pid ne correspond à aucun job.");
-      exit(EXIT_FAILURE);
-    }
-    j->state=ST;
-  }
-  else {
-    if(WIFSIGNALED(status)){
-      child_jid=jbs_pid2jd(child_pid);
-      if (jobs_deletejob(child_jid)){
-	if (verbose){
-	  printf("sigchld_handler %d delete",child_jid);
-	}
-      }
-      fprintf(stdout,"Job[%d] (%d) terminated by signal %d\n",child_jid,child_pid,WTERMSIG(status));
-    }
-    else {
-      if (WIFEXITED(status)){
-      child_jid=jbs_pid2jd(child_pid);
-      if (jobs_deletejob(child_jid)){
-	if (verbose){
-	  printf("sigchld_handler %d delete",child_jid);
-	}
-      }
-      fprintf(stdout,"Job[%d] (%d) terminated by exit %d\n",child_jid,child_pid,WEXITSTATUS(status));
-      }
-      if(!((child_pid==0)||(child_pid==-1 && errno=ECHILD))){
-	perror("sigchld_handler : le pid ne correspond pas à un child.");
+  if (verbose) printf("sigchld_handler entering\n");
+  while ((child_pid = waitpid(-1,&status,WNOHANG||WUNTRACED))>0)
+    if (WIFSTOPPED(status)){
+	if (verbose)
+		printf("sigchld_handler received the stop\n");
+      j=jobs_getjobpid(child_pid);
+      if (!j) {
+	perror("sigchld_handler : le pid ne correspond à aucun job.");
 	exit(EXIT_FAILURE);
       }
+	if (verbose)
+		printf("sigchld_handler stopping job %d\n",j->jb_pid);
+      j->jb_state=ST;
     }
-  }
-/* fin implémentation */
-if (verbose)
-  printf("sigchld_handler: exiting\n");
-return;
+    else {
+      if(WIFSIGNALED(status)){
+	child_jid=jobs_pid2jid(child_pid);
+	if (jobs_deletejob(child_jid)){
+	  if (verbose){
+	    printf("sigchld_handler %d delete",child_jid);
+	  }
+	}
+	fprintf(stdout,"Job[%d] (%d) terminated by signal %d\n",child_jid,child_pid,WTERMSIG(status));
+      }
+      else {
+	if (WIFEXITED(status)){
+	  child_jid=jobs_pid2jid(child_pid);
+	  if (jobs_deletejob(child_jid)){
+	    if (verbose){
+	      printf("sigchld_handler %d delete",child_jid);
+	    }
+	  }
+	  fprintf(stdout,"Job[%d] (%d) terminated by exit %d\n",child_jid,child_pid,WEXITSTATUS(status));
+	}
+	if(!((child_pid==0)||(child_pid==-1 && errno==ECHILD))){
+	  perror("sigchld_handler : le pid ne correspond pas à un child.");
+	  exit(EXIT_FAILURE);
+	}
+      }
+    }
+  /* fin implémentation */
+  if (verbose)
+    printf("sigchld_handler: exiting\n");
+  return;
 }
 
 
@@ -89,6 +93,7 @@ return;
  *    to the foreground job.
  */
 void sigint_handler(int sig) {
+  pid_t pid;
   if (verbose)
     printf("sigint_handler: entering\n");
   /* Début implémentation */
@@ -113,11 +118,11 @@ void sigint_handler(int sig) {
  *     foreground job by sending it a SIGTSTP.
  */
 void sigtstp_handler(int sig) {
-  if (verbose)
-    printf("sigtstp_handler: entering\n");
+  pid_t pid;
+  
   /* Début implémentation */
   if (verbose){
-    printf("sigint_handler entering\n");
+    printf("sigstp_handler entering\n");
   }
   if ((pid=jobs_fgpid())>0){
     if (verbose){

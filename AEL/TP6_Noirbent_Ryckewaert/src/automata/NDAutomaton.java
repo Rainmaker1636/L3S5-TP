@@ -27,17 +27,14 @@ public class NDAutomaton extends AbstractAutomaton implements Recognizer, Automa
 		delta = new HashMap<Key, Set<State>>();
 	}
 
-	@Override
 	public boolean isInitial(String name) throws StateException {
 		return isInitial(states.get(name));
 	}
 
-	@Override
 	public boolean isInitial(Integer id) throws StateException {
 		return isInitial(states.get(id));
 	}
 
-	@Override
 	public Set<State> getTransitionSet(State from, char letter) {
 		Set<State> s = delta.get(new Key(from, letter));
 		if (s == null)
@@ -46,28 +43,22 @@ public class NDAutomaton extends AbstractAutomaton implements Recognizer, Automa
 			return Collections.unmodifiableSet(s);
 	}
 
-	@Override
 	public Set<State> getTransitionSet(String from, char letter) {
 		return getTransitionSet(states.get(from), letter);
 	}
 
-	@Override
 	public Set<State> getTransitionSet(Integer from, char letter) {
 		return getTransitionSet(states.get(from), letter);
 	}
 
 	public Set<State> getTransitionSet(Set<State> from, char letter) {
-		Set<State> s;
+		Set<State> s = new HashSet<State>();
 		for(State state : from){
-			s.addAll(delta.get(new Key(state, letter));
+			s.addAll(delta.get(new Key(state, letter)));
 		}
-		if (s == null)
-			return Collections.emptySet();
-		else	
-			return Collections.unmodifiableSet(s);
+		return s;
 	}
 
-	@Override
 	public Set<State> getInitialStates() {
 		return Collections.unmodifiableSet(this.initialStates);
 	}
