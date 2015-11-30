@@ -9,6 +9,8 @@
 #include <string.h>
 
 #include "graphe.h"
+#include "courte_chaine.c"
+
 void
 max
 (int *a,int b){
@@ -59,6 +61,10 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  printf("\n Affichage des plus courtes chaines.\n");
+	plus_courte_chaine(graphe, 0);
+	
+	
   /* Fin code modifié */
 
   grapheLibere(graphe);
