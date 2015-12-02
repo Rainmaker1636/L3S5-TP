@@ -3,7 +3,7 @@ package condenses_lex;
  *   Minimal  YYtoken implementation
  **/
 
-class BaseToken implements Yytoken{
+public class BaseToken implements Yytoken{
     private final TokenType type;
     
     /**
@@ -18,4 +18,16 @@ class BaseToken implements Yytoken{
     public String toString(){
         return "<"+type+">";
     }
+    
+    public boolean isChiffre(){
+    	return false;
+    }
+    
+    public boolean isAlphabet(){
+    	return false;
+    }
+    
+	public boolean isOuvrante() {
+		return false;
+	}
 }

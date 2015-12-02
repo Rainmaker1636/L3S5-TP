@@ -17,24 +17,8 @@ public class ArdExemple extends Ard {
 	public ArdExemple(Reader in) {
 		super(in);
 	}
-
-	private String L(){
-		return Character.toString(this.current);
-	}
 	
-	private int C(){
-		return Integer.parseInt(Character.toString(this.current));
-	}
-	
-	private String E(){
-		
-	}
-	
-	private String S(){
-		
-	}
-	
-	private String S() throws SyntaxException, ParserException {
+	private void S() throws SyntaxException, ParserException {
 		switch (current) {
 		case 'a':
 		case 'b':

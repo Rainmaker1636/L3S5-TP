@@ -12,4 +12,8 @@ public class Ouvrante extends BaseToken{
     public String toString(){
         return super.toString();
     }
+    
+    public boolean isOuvrante(){
+    	return true;
+    }
 }

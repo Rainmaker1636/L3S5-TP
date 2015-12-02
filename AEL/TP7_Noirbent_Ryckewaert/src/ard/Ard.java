@@ -15,7 +15,7 @@ public abstract class Ard {
 	public static final char END_MARKER = '#';
 	Scanner input;
 
-	private boolean invalid = false;
+	protected boolean invalid = false;
 	
 	protected char current;
 	private String currentLine;
@@ -32,7 +32,7 @@ public abstract class Ard {
 		shift();
 	}
 	
-	private void shift(){
+	protected void shift(){
 		try {
 			currentIndex++;
 			if (currentLine == null || currentIndex >= currentLine.length()) {

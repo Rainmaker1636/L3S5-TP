@@ -14,5 +14,9 @@ public class Entier extends BaseToken{
     public String toString(){
         return super.toString()+"["+value+"]";
     }
+    
+    public boolean isChiffre(){
+    	return true;
+    }
 
 }
