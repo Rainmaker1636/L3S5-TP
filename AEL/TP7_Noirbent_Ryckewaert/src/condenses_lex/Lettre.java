@@ -15,4 +15,7 @@ public class Lettre extends BaseToken{
         return super.toString()+"["+value+"]";
     }
 
+    public boolean isAlphabet(){
+    	return true;
+    }
 }

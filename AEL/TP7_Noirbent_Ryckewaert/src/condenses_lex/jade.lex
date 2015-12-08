@@ -9,19 +9,23 @@ package condenses_lex ;
 %line
 %column
 
+%state ECHAPPEMENT
+
 %{
 %}
-
+echap=[\\]
+lettre=[a-zA-Z]
+entier=[0-9]+
 %%
 
 
 <YYINITIAL>{
-	[a-zA-Z]|(\\.)
+	{lettre}
 	{
 		return new Lettre(yytext());	
 	}
 	
-	[0-9]+
+	{entier}
 	{
 		return new Entier(Integer.parseInt(yytext()));
 	}
@@ -36,10 +40,34 @@ package condenses_lex ;
 		return new Fermante(false);
 	}
 
+	{echap}
+	{
+		yybegin(ECHAPPEMENT);
+	}
+
+	#
+	{
+ 		return new Eod("Fin");
+	}
+	
+}
+
+<ECHAPPEMENT>{
+	{entier}
+	{
+		yybegin(YYINITIAL);
+		return new Lettre(yytext());
+	}
+
+	{lettre}
+	{
+		yybegin(YYINITIAL);
+		return new Lettre(yytext());
+	}
 }
 
 [^/\s\n]
-	{ 
-		yybegin(YYINITIAL);
-		return new Unknown(yytext());
-	}
+{ 
+	return new Unknown(yytext());
+}
+
