@@ -115,7 +115,20 @@ void rapide(pos_t taille, unsigned int nb_threads) {
 
     assert(nb_threads > 1);
 
-    fprintf(stderr, "À implémenter !\n");
+	/* Début code modifié */
+	arg_t agr;
+  pile p, pile_threads;
+	int i;
+
+	agr->p_bloc=;
+	agr->p_threads=;
+	for (i=0;i<nb_threads;i++){
+		pthread_t tid;
+		
+		assert(pthread_create(&tid2, NULL, th_fonct, arg) == 0);
+		
+		}
+	/* Fin code modifié */
 
     assert(0);
 }
