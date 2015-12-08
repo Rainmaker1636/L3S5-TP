@@ -1,8 +1,0 @@
-GENOME=./aleazard
-COMPTEUR=./compteur-gc
-GENOME_INPUT=genome.txt
-SIZE_N_FILE=n.dat
-SIZE_T_FILE=t.dat
-TIME_FILE=genom.dat
-RES_FILE=res.dat
-TIME_CMD="/usr/bin/time"
