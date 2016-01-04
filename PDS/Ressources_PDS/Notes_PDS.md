@@ -116,7 +116,7 @@ Processus léger, fil d'exécution
 id : numéro abstrait
 à l'origine étéient des processus
 
-pthread_create -> "crit l'id du thread créé dans son param
+pthread_create -> écrit l'id du thread créé dans son param
 pthread_self -> récupere son id
 
 fonction réentrantes -> ne doivent pas modifier de variable globales (à cause du partage de mémoire)
@@ -124,7 +124,7 @@ retour des fonctions pthread contiennent leur code d'erreur (err_no étant globa
 
 pas de hierarchie -> n'importe quel thread peut attendre les autres, peut exiter seul
 
-2 modes de gestion de la fin (pas de mode zombi mmais doit être fini) :
+2 modes de gestion de la fin (pas de mode zombi mais doit être fini) :
 - attente du join
 - detach (ne permet pas de passer outre un return)
 
@@ -134,3 +134,10 @@ futex : fast appel systeme sur un mutex
 verrou récursif : proriétaire + nombre de prise en main, mal normalisé
 
 appel systeme qui fait le fork : s'appelle clone, différence avec fork par des options
+
+mutex + condition, condition permet de bloquer jusqu'au signal (wait, signal, broadcast)
+
+attention, passage de variable locale dans les threads -> perte lors de la fin de la fonction
+
+Tony Hoare : travail sur les synchronisation
+
