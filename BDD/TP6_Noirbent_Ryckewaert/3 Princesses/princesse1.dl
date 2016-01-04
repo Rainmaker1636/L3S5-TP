@@ -1,8 +1,3 @@
-% ELFE - programmation logique et fonctionelle, evidemment!
-% Licence 3 informatique, universite Lille 1
-% auteurs: C. Bouillaguet et C. Kuttler
-% les princesses et les tigres (1/4)
-
 contenu(tigre).
 contenu(princesse).
 

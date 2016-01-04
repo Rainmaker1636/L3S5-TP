@@ -52,5 +52,7 @@ Info: 6 tuples computed.
 Parie 5 : Parsing
 /[phrase1.dl, dictionnaire1.dl,grammaire1.dl].
 
+Q22)
+
 
 
